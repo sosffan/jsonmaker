@@ -1,0 +1,74 @@
+package com.ffanonline.testing.creator;
+
+import com.ffanonline.testing.constraints.NumberConstraint;
+import com.ffanonline.testing.constraints.StringConstraint;
+import com.github.curiousoddman.rgxgen.RgxGen;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
+
+import java.util.Set;
+
+public class RandomJsonCreator implements JsonDataCreator {
+
+    @Override
+    public String generateStringField(StringConstraint constraint, String fieldName, String fieldPath) {
+        String pattern = constraint.getPattern();
+        int maxLength = constraint.getMaxLength();
+        int minLength = constraint.getMinLength();
+
+        Set<String> enumValues = constraint.getEnumSet();
+
+        if (enumValues != null) {
+            int index = RandomUtils.nextInt(0, enumValues.size()-1);
+            return enumValues.toArray()[index].toString();
+        }
+
+        String result;
+
+        if (maxLength < 0) {
+            maxLength = 100;
+        }
+
+        int count = RandomUtils.nextInt(minLength,maxLength);
+
+        if (pattern != null) {
+            RgxGen rgxGen = new RgxGen(pattern);
+            result = rgxGen.generate();
+            if(result.length() > maxLength) {
+                result = result.substring(0, count);
+            }
+        } else {
+            result = RandomStringUtils.randomAscii(count);
+        }
+        return result;
+    }
+
+    @Override
+    public Boolean generateBooleanField(String fieldName, String fieldPath) {
+        return RandomUtils.nextBoolean();
+    }
+
+    @Override
+    public Double generateNumberField(NumberConstraint constraint, String fieldName, String fieldPath) {
+        int maximum = constraint.getMaximum();
+        int minimum = constraint.getMinimum();
+
+        if (maximum < 0) {
+            maximum = 99999999;
+        }
+
+        return RandomUtils.nextDouble(minimum, maximum);
+    }
+
+    @Override
+    public Long generateIntegerField(NumberConstraint constraint, String fieldName, String fieldPath) {
+        int maximum = constraint.getMaximum();
+        int minimum = constraint.getMinimum();
+        if (maximum < 0) {
+            maximum = 99999999;
+        }
+
+        return RandomUtils.nextLong(minimum, maximum);
+    }
+
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Modified JSON Schema draft v4 that includes the optional '$ref' and 'format'",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "pattern": ""
+    },
+    "test": {
+      "type": "object",
+      "properties": {
+        "a": {
+          "type": "string"
+        },
+        "b": {
+          "type": "number"
+        },
+        "c": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "d": {
+          "type": "object",
+          "properties": {
+            "e": {
+              "type": ""
+            }
+          }
+        },
+        "e": {
+          "$ref": "#/definitions/testDef1"
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "definitions": {
+    "testDef1": {
+      "type": "string"
+    }
+  }
+}
