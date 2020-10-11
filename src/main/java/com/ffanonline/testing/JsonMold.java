@@ -1,23 +1,25 @@
 package com.ffanonline.testing;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
 import com.ffanonline.testing.creator.JsonDataCreator;
-import com.ffanonline.testing.entity.*;
-import com.ffanonline.testing.utils.Common;
+import com.ffanonline.testing.entity.JsonMaker;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class JsonMold {
 
     private final Set<String> types = new HashSet<String>();
     private final Set<String> requiredFields = new HashSet<String>();
     private final JsonMoldContext context;
-    private final Map<String, JsonMaker> makers = new HashMap<>();
+    private JsonMaker maker;
     private JsonNode schemaNode; // Value of the property
     private String schemaPath = "#"; // Json Path
     private JsonMold parentSchema = null;
     private Map<String, JsonMold> propertiesNode = new HashMap<String, JsonMold>();
+    private final Boolean isRequired;
 
     public JsonMold(JsonMoldContext context, JsonNode schemaNode) {
         this(context, schemaNode, null);
@@ -25,14 +27,15 @@ public class JsonMold {
     }
 
     public JsonMold(JsonMoldContext context, JsonNode schemaNode, JsonMold parentSchema) {
-        this(context, "#", schemaNode, parentSchema);
+        this(context, "#", schemaNode, parentSchema, true);
     }
 
-    public JsonMold(JsonMoldContext context, String schemaPath, JsonNode schemaNode, JsonMold parentSchema) {
+    public JsonMold(JsonMoldContext context, String schemaPath, JsonNode schemaNode, JsonMold parentSchema, Boolean isRequired) {
         this.schemaPath = schemaPath;
         this.schemaNode = schemaNode;
         this.parentSchema = parentSchema;
         this.context = context;
+        this.isRequired = isRequired;
     }
 
     public JsonMold initialize() throws Exception {
@@ -45,19 +48,13 @@ public class JsonMold {
         fetchRequiredFields(this.schemaNode);
 
         if (this.types.contains(JsonFieldType.OBJECT.getName())) {
-
-            JsonMaker maker = JsonFieldType.OBJECT.newJsonMaker(this.schemaPath, this.schemaNode, this, this.context);
-            this.makers.put(this.schemaPath, maker);
-
+            this.maker = JsonFieldType.OBJECT.newJsonMaker(this.schemaPath, this.schemaNode, this, this.context, isRequired);
         } else if (this.types.contains(JsonFieldType.ARRAY.getName())) {
-
-            JsonMaker maker = JsonFieldType.ARRAY.newJsonMaker(this.schemaPath, this.schemaNode, this, this.context);
-            this.makers.put(this.schemaPath, maker);
+            this.maker = JsonFieldType.ARRAY.newJsonMaker(this.schemaPath, this.schemaNode, this, this.context, isRequired);
         } else {
             for (String a : this.types) {
                 if (!a.equals("null")) {
-                    JsonMaker maker = JsonFieldType.getByValue(a).newJsonMaker(this.schemaPath, this.schemaNode, this, this.context);
-                    this.makers.put(this.schemaPath, maker);
+                    this.maker = JsonFieldType.getByValue(a).newJsonMaker(this.schemaPath, this.schemaNode, this, this.context, isRequired);
                 }
             }
         }
@@ -66,64 +63,12 @@ public class JsonMold {
     }
 
 
-    public JsonNode assembleJson(JsonDataCreator creator, ObjectNode resultParnetnode) throws Exception {
-        if (resultParnetnode == null) {
-            resultParnetnode = context.getMapper().createObjectNode();
-            context.setResultRootNode(resultParnetnode);
-        }
-
-        for (String path : makers.keySet()) {
-
-            JsonMaker maker = makers.get(path);
-            Object value = maker.create(creator);
-            String fieldName = Common.getFieldNameFromJsonPath(schemaPath);
-
-            if (fieldName == null) {
-                if (maker.getClass().equals(StringJsonMaker.class)) {
-                    return TextNode.valueOf((String) value);
-                } else if (maker.getClass().equals(NumberJsonMaker.class)) {
-                    return DoubleNode.valueOf((Double) value);
-                } else if (maker.getClass().equals(IntegerJsonMaker.class)) {
-                    return LongNode.valueOf((Long) value);
-                } else if (maker.getClass().equals(BooleanJsonMaker.class)) {
-                    return BooleanNode.valueOf((Boolean) value);
-                } else if (maker.getClass().equals(ArrayJsonMaker.class)) {
-//                    resultParnetnode.putArray(fieldName).addAll((List<JsonNode>) value);
-                } else if (maker.getClass().equals(ObjectJsonMaker.class)) {
-                    ObjectNode on = context.getMapper().createObjectNode();
-                    Map<String, ObjectNode> propertyMap = (Map<String, ObjectNode>) value;
-                    for (String a : propertyMap.keySet()) {
-                        on.setAll(propertyMap.get(a));
-                    }
-                    return on;
-                }
-            }
-
-            if (maker.getClass().equals(StringJsonMaker.class)) {
-                resultParnetnode.put(fieldName, (String) value);
-            } else if (maker.getClass().equals(NumberJsonMaker.class)) {
-                resultParnetnode.put(fieldName, (Double) value);
-            } else if (maker.getClass().equals(IntegerJsonMaker.class)) {
-                resultParnetnode.put(fieldName, (Long) value);
-            } else if (maker.getClass().equals(BooleanJsonMaker.class)) {
-                resultParnetnode.put(fieldName, (Boolean) value);
-            } else if (maker.getClass().equals(ArrayJsonMaker.class)) {
-                resultParnetnode.putArray(fieldName).addAll((List<JsonNode>) value);
-            } else if (maker.getClass().equals(ObjectJsonMaker.class)) {
-                ObjectNode on = resultParnetnode.putObject(fieldName);
-                Map<String, ObjectNode> propertyMap = (Map<String, ObjectNode>) value;
-                for (String a : propertyMap.keySet()) {
-                    on.setAll(propertyMap.get(a));
-                }
-            }
-        }
-
-        return resultParnetnode;
+    public JsonNode assembleJson(JsonDataCreator creator) throws Exception {
+        return this.maker.create(creator);
     }
 
-    public String assembleJsonString(JsonDataCreator creator, ObjectNode resultParnetnode) throws Exception {
-        JsonNode node = assembleJson(creator, resultParnetnode);
-
+    public String assembleJsonString(JsonDataCreator creator) throws Exception {
+        JsonNode node = assembleJson(creator);
         return context.getMapper().writeValueAsString(node);
     }
 
@@ -145,19 +90,6 @@ public class JsonMold {
                 this.types.add(a.textValue());
             }
         }
-    }
-
-
-    private void getTypeProperties(String fieldName) {
-        JsonNode node = this.getSchemaNode().get(fieldName);
-        if (node.size() == 0) {
-            this.types.add(node.textValue());
-        } else {
-            for (JsonNode a : node) {
-                this.types.add(a.textValue());
-            }
-        }
-        System.out.println(this.schemaPath + "'s type: " + this.types.size() + "  + " + this.types.toString());
     }
 
 
@@ -189,4 +121,7 @@ public class JsonMold {
         this.propertiesNode = propertiesNode;
     }
 
+    public Set<String> getRequiredFields() {
+        return requiredFields;
+    }
 }

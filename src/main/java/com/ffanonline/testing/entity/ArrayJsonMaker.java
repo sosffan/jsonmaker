@@ -1,23 +1,22 @@
 package com.ffanonline.testing.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ffanonline.testing.JsonMold;
 import com.ffanonline.testing.JsonMoldContext;
 import com.ffanonline.testing.Keyword;
-import com.ffanonline.testing.constraints.ArrayConstraint;
+import com.ffanonline.testing.constraints.ArrayBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
 import org.apache.commons.lang3.RandomUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ArrayJsonMaker extends BaseJsonMaker {
 
     private final JsonMold itemSchema;
-    private ArrayConstraint constraint;
+    private final ArrayBaseConstraint constraint;
 
-    public ArrayJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold parentSchema, JsonMoldContext context) throws Exception {
-        super(schemaPath, schemaNode, parentSchema, context);
+    public ArrayJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) throws Exception {
+        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
 
         JsonNode minItemsNode = schemaNode.get(Keyword.MIN_ITEMS.getName());
         JsonNode maxItemsNode = schemaNode.get(Keyword.MAX_ITEMS.getName());
@@ -25,28 +24,36 @@ public class ArrayJsonMaker extends BaseJsonMaker {
         int minItems = minItemsNode == null ? 0 : minItemsNode.intValue();
         int maxItems = maxItemsNode == null ? -1 : maxItemsNode.intValue();
 
-        constraint = new ArrayConstraint(minItems, maxItems);
+        constraint = new ArrayBaseConstraint(minItems, maxItems, isRequired);
 
 
         JsonNode itemsNode = schemaNode.get(Keyword.ITEMS.getName());
-        this.itemSchema = new JsonMold(context, schemaPath + "[]", itemsNode, parentSchema);
-//        this.itemSchema = new JsonSchema(context, null, itemsNode, parentSchema);
+        this.itemSchema = new JsonMold(context, schemaPath + "[]", itemsNode, currentJsonMold, isRequired);  // should this be the same as isRequired.
+//        this.itemSchema = new JsonSchema(context, null, itemsNode, currentJsonMold);
         this.itemSchema.initialize();
     }
 
     @Override
-    public Object create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator) throws Exception {
+        ObjectNode node = getContext().getMapper().createObjectNode();
+        ArrayNode arrayNode = null;
+        if (getFieldName() != null) {
+            arrayNode = node.putArray(getFieldName());
+        } else {
+            throw new Exception("No Field Name for this Array Object.");
+            // arrayNode = getContext().getMapper().createArrayNode();
+        }
+
         int count = 0;
         if (constraint.getMaxItems() < 0) {
             count = RandomUtils.nextInt(constraint.getMinItems(), getContext().getMaxItems());
         } else {
             count = RandomUtils.nextInt(constraint.getMinItems(), constraint.getMaxItems());
         }
-        List<JsonNode> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            list.add(itemSchema.assembleJson(creator, null));
+            arrayNode.add(itemSchema.assembleJson(creator));
         }
 
-        return list;
+        return node;
     }
 }

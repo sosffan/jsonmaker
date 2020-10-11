@@ -1,6 +1,7 @@
 package com.ffanonline.testing.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ffanonline.testing.JsonMold;
 import com.ffanonline.testing.JsonMoldContext;
 import com.ffanonline.testing.Keyword;
@@ -9,21 +10,27 @@ import com.ffanonline.testing.creator.JsonDataCreator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class ObjectJsonMaker extends BaseJsonMaker {
     private final Map<String, JsonMold> propertiesMap = new HashMap<>();
+    private Set<String> requiredFields = null;
 
-    public ObjectJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold parentSchema, JsonMoldContext context) throws Exception {
-        super(schemaPath, schemaNode, parentSchema, context);
+    public ObjectJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) throws Exception {
+        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
         JsonNode propertiesNode = schemaNode.get(Keyword.PROPERTIES.getName());
+
+        requiredFields = currentJsonMold.getRequiredFields();
 
         Iterator<String> properties = propertiesNode.fieldNames();
         while (properties.hasNext()) {
             String propertyName = properties.next();
 
+            Boolean propertyIsRequired = requiredFields.contains(propertyName);
+
             String path = schemaPath + "/" + propertyName;
             JsonNode node = propertiesNode.get(propertyName);
-            JsonMold jsonMold = new JsonMold(context, path, node, parentSchema);
+            JsonMold jsonMold = new JsonMold(context, path, node, currentJsonMold, propertyIsRequired);
 
             propertiesMap.put(propertyName, jsonMold.initialize());
         }
@@ -31,16 +38,22 @@ public class ObjectJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public Object create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator) throws Exception {
 
-        Map<String, JsonNode> resultFields = new HashMap<>();
+        ObjectNode on = getContext().getMapper().createObjectNode();
+
+        if (getFieldName() != null) {
+            on = on.putObject(getFieldName());
+        }
 
         for (String propertyName : propertiesMap.keySet()) {
             JsonMold schema = propertiesMap.get(propertyName);
-            JsonNode node = schema.assembleJson(creator, null);
-            resultFields.put(propertyName, node);
+            ObjectNode node = (ObjectNode) schema.assembleJson(creator);
+            if (node != null) {
+                on.setAll(node);
+            }
         }
 
-        return resultFields;
+        return on;
     }
 }

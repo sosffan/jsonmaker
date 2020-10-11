@@ -1,24 +1,21 @@
 package com.ffanonline.testing.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.ffanonline.testing.JsonMold;
 import com.ffanonline.testing.JsonMoldContext;
 import com.ffanonline.testing.Keyword;
-import com.ffanonline.testing.constraints.StringConstraint;
+import com.ffanonline.testing.constraints.StringBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
-import com.ffanonline.testing.utils.Common;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class StringJsonMaker extends BaseJsonMaker {
+    StringBaseConstraint constraint = null;
 
-    StringConstraint constraint = null;
-    String fieldName = null;
-
-
-    public StringJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold parentSchema, JsonMoldContext context) {
-        super(schemaPath, schemaNode, parentSchema, context);
+    public StringJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) {
+        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
 
         JsonNode patternNode = schemaNode.get(Keyword.PATTERN.getName());
         JsonNode maxLengthNode = schemaNode.get(Keyword.MAX_LENGTH.getName());
@@ -38,13 +35,17 @@ public class StringJsonMaker extends BaseJsonMaker {
             }
         }
 
-        constraint = new StringConstraint(minLength, maxLength, pattern, enumSet);
-        fieldName = Common.getFieldNameFromJsonPath(schemaPath);
+        constraint = new StringBaseConstraint(minLength, maxLength, pattern, enumSet, isRequired);
     }
 
     @Override
-    public Object create(JsonDataCreator creator) {
-        String value = creator.generateStringField(constraint, fieldName, getSchemaPath());
-        return value;
+    public JsonNode create(JsonDataCreator creator) {
+        String value = creator.generateStringField(constraint, getFieldName(), getSchemaPath());
+
+        if (getFieldName() == null) {
+            return TextNode.valueOf(value);
+        } else {
+            return getContext().getMapper().createObjectNode().put(getFieldName(), value);
+        }
     }
 }

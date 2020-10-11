@@ -1,19 +1,18 @@
 package com.ffanonline.testing.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.ffanonline.testing.JsonMold;
 import com.ffanonline.testing.JsonMoldContext;
 import com.ffanonline.testing.Keyword;
-import com.ffanonline.testing.constraints.NumberConstraint;
+import com.ffanonline.testing.constraints.NumberBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
-import com.ffanonline.testing.utils.Common;
 
 public class NumberJsonMaker extends BaseJsonMaker {
-    NumberConstraint constraint = null;
-    String fieldName;
+    NumberBaseConstraint constraint = null;
 
-    public NumberJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold parentSchema, JsonMoldContext context) {
-        super(schemaPath, schemaNode, parentSchema, context);
+    public NumberJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) {
+        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
 
         JsonNode minimumNode = schemaNode.get(Keyword.MINIMUM.getName());
         JsonNode maximumNode = schemaNode.get(Keyword.MAXIMUM.getName());
@@ -23,15 +22,17 @@ public class NumberJsonMaker extends BaseJsonMaker {
         int maximum = maximumNode == null ? -1 : maximumNode.intValue();
         int multipleOf = multipleOfNode == null ? -1 : multipleOfNode.intValue();
 
-        constraint = new NumberConstraint(minimum, maximum, multipleOf);
-        fieldName = Common.getFieldNameFromJsonPath(getSchemaPath());
-
+        constraint = new NumberBaseConstraint(minimum, maximum, multipleOf, isRequired);
     }
 
     @Override
-    public Object create(JsonDataCreator creator) {
+    public JsonNode create(JsonDataCreator creator) {
 
-        Double value = creator.generateNumberField(constraint, fieldName, getSchemaPath());
-        return value;
+        Double value = creator.generateNumberField(constraint, getFieldName(), getSchemaPath());
+        if (getFieldName() == null) {
+            return DoubleNode.valueOf(value);
+        } else {
+            return getContext().getMapper().createObjectNode().put(getFieldName(), value);
+        }
     }
 }

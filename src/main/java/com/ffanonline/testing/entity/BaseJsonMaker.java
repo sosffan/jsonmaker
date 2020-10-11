@@ -9,17 +9,19 @@ public abstract class BaseJsonMaker implements JsonMaker {
 
     private final String schemaPath;
     private final JsonNode schemaNode;
-    private final JsonMold parentSchema;
+    private final JsonMold currentJsonMold;
     private final JsonMoldContext context;
-    private final String schemaName;
+    private final String fieldName;
+    private final Boolean isRequired;
 
-    public BaseJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold parentSchema, JsonMoldContext context) {
+    public BaseJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) {
         this.schemaPath = schemaPath;
         this.schemaNode = schemaNode;
-        this.parentSchema = parentSchema;
+        this.currentJsonMold = currentJsonMold;
         this.context = context;
+        this.isRequired = isRequired;
 
-        this.schemaName = Common.getFieldNameFromJsonPath(schemaPath);
+        this.fieldName = Common.getFieldNameFromJsonPath(schemaPath);
     }
 
     public String getSchemaPath() {
@@ -30,15 +32,19 @@ public abstract class BaseJsonMaker implements JsonMaker {
         return schemaNode;
     }
 
-    public JsonMold getParentSchema() {
-        return parentSchema;
+    public JsonMold getCurrentJsonMold() {
+        return currentJsonMold;
     }
 
     public JsonMoldContext getContext() {
         return context;
     }
 
-    public String getSchemaName() {
-        return schemaName;
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public Boolean getRequired() {
+        return isRequired;
     }
 }

@@ -1,22 +1,27 @@
 package com.ffanonline.testing.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.ffanonline.testing.JsonMold;
 import com.ffanonline.testing.JsonMoldContext;
+import com.ffanonline.testing.constraints.BaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
-import com.ffanonline.testing.utils.Common;
 
 public class BooleanJsonMaker extends BaseJsonMaker {
-    String fieldName;
-    public BooleanJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold parentSchema, JsonMoldContext context) {
-        super(schemaPath, schemaNode, parentSchema, context);
+    BaseConstraint constraint;
+    public BooleanJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) {
+        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
 
-        fieldName = Common.getFieldNameFromJsonPath(schemaPath);
+        constraint = new BaseConstraint(isRequired);
     }
 
     @Override
-    public Object create(JsonDataCreator creator) {
-        Boolean value = creator.generateBooleanField(fieldName, getSchemaPath());
-        return value;
+    public JsonNode create(JsonDataCreator creator) {
+        Boolean value = creator.generateBooleanField(constraint, getFieldName(), getSchemaPath());
+        if (getFieldName() == null) {
+            return BooleanNode.valueOf(value);
+        } else {
+            return getContext().getMapper().createObjectNode().put(getFieldName(), value);
+        }
     }
 }

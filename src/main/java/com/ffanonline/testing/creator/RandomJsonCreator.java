@@ -1,7 +1,8 @@
 package com.ffanonline.testing.creator;
 
-import com.ffanonline.testing.constraints.NumberConstraint;
-import com.ffanonline.testing.constraints.StringConstraint;
+import com.ffanonline.testing.constraints.BaseConstraint;
+import com.ffanonline.testing.constraints.NumberBaseConstraint;
+import com.ffanonline.testing.constraints.StringBaseConstraint;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -11,7 +12,7 @@ import java.util.Set;
 public class RandomJsonCreator implements JsonDataCreator {
 
     @Override
-    public String generateStringField(StringConstraint constraint, String fieldName, String fieldPath) {
+    public String generateStringField(StringBaseConstraint constraint, String fieldName, String fieldPath) {
         String pattern = constraint.getPattern();
         int maxLength = constraint.getMaxLength();
         int minLength = constraint.getMinLength();
@@ -19,7 +20,7 @@ public class RandomJsonCreator implements JsonDataCreator {
         Set<String> enumValues = constraint.getEnumSet();
 
         if (enumValues != null) {
-            int index = RandomUtils.nextInt(0, enumValues.size()-1);
+            int index = RandomUtils.nextInt(0, enumValues.size() - 1);
             return enumValues.toArray()[index].toString();
         }
 
@@ -29,12 +30,12 @@ public class RandomJsonCreator implements JsonDataCreator {
             maxLength = 100;
         }
 
-        int count = RandomUtils.nextInt(minLength,maxLength);
+        int count = RandomUtils.nextInt(minLength, maxLength);
 
         if (pattern != null) {
             RgxGen rgxGen = new RgxGen(pattern);
             result = rgxGen.generate();
-            if(result.length() > maxLength) {
+            if (result.length() > maxLength) {
                 result = result.substring(0, count);
             }
         } else {
@@ -44,12 +45,12 @@ public class RandomJsonCreator implements JsonDataCreator {
     }
 
     @Override
-    public Boolean generateBooleanField(String fieldName, String fieldPath) {
+    public Boolean generateBooleanField(BaseConstraint constraint, String fieldName, String fieldPath) {
         return RandomUtils.nextBoolean();
     }
 
     @Override
-    public Double generateNumberField(NumberConstraint constraint, String fieldName, String fieldPath) {
+    public Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath) {
         int maximum = constraint.getMaximum();
         int minimum = constraint.getMinimum();
 
@@ -61,7 +62,7 @@ public class RandomJsonCreator implements JsonDataCreator {
     }
 
     @Override
-    public Long generateIntegerField(NumberConstraint constraint, String fieldName, String fieldPath) {
+    public Long generateIntegerField(NumberBaseConstraint constraint, String fieldName, String fieldPath) {
         int maximum = constraint.getMaximum();
         int minimum = constraint.getMinimum();
         if (maximum < 0) {
