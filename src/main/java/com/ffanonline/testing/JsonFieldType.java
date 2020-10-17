@@ -37,9 +37,9 @@ public enum JsonFieldType {
         return this.name;
     }
 
-    public JsonMaker newJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentMold, JsonMoldContext context, Boolean isRequired) throws Exception {
-        Constructor<JsonMaker> c = ((Class<JsonMaker>) maker).getConstructor(String.class, JsonNode.class, JsonMold.class, JsonMoldContext.class, Boolean.class);
+    public BaseJsonMaker newJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentMold, JsonMoldContext context, Boolean isRequired) throws Exception {
+        Constructor<BaseJsonMaker> c = ((Class<BaseJsonMaker>) maker).getConstructor(String.class, JsonNode.class, JsonMold.class, JsonMoldContext.class);
 
-        return c.newInstance(schemaPath, schemaNode, currentMold, context, isRequired);
+        return c.newInstance(schemaPath, schemaNode, currentMold, context);
     }
 }

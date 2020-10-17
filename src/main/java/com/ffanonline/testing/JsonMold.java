@@ -2,7 +2,7 @@ package com.ffanonline.testing;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ffanonline.testing.creator.JsonDataCreator;
-import com.ffanonline.testing.entity.JsonMaker;
+import com.ffanonline.testing.entity.BaseJsonMaker;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,12 +14,12 @@ public class JsonMold {
     private final Set<String> types = new HashSet<String>();
     private final Set<String> requiredFields = new HashSet<String>();
     private final JsonMoldContext context;
-    private JsonMaker maker;
+    private final Boolean isRequired;
+    private BaseJsonMaker maker;
     private JsonNode schemaNode; // Value of the property
     private String schemaPath = "#"; // Json Path
     private JsonMold parentSchema = null;
     private Map<String, JsonMold> propertiesNode = new HashMap<String, JsonMold>();
-    private final Boolean isRequired;
 
     public JsonMold(JsonMoldContext context, JsonNode schemaNode) {
         this(context, schemaNode, null);
@@ -27,7 +27,7 @@ public class JsonMold {
     }
 
     public JsonMold(JsonMoldContext context, JsonNode schemaNode, JsonMold parentSchema) {
-        this(context, "#", schemaNode, parentSchema, true);
+        this(context, "#", schemaNode, parentSchema, false);
     }
 
     public JsonMold(JsonMoldContext context, String schemaPath, JsonNode schemaNode, JsonMold parentSchema, Boolean isRequired) {
@@ -46,6 +46,13 @@ public class JsonMold {
 
         fetchTypeProperties(this.schemaNode);
         fetchRequiredFields(this.schemaNode);
+
+        Boolean isNullable = false;
+        if (this.types.contains("null")) {
+            isNullable = true;
+        }
+
+        context.addFieldInfo(schemaPath, isRequired, isNullable);
 
         if (this.types.contains(JsonFieldType.OBJECT.getName())) {
             this.maker = JsonFieldType.OBJECT.newJsonMaker(this.schemaPath, this.schemaNode, this, this.context, isRequired);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ffanonline.testing.JsonMold;
 import com.ffanonline.testing.JsonMoldContext;
 import com.ffanonline.testing.Keyword;
+import com.ffanonline.testing.constraints.BaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
 
 import java.util.HashMap;
@@ -14,13 +15,13 @@ import java.util.Set;
 
 public class ObjectJsonMaker extends BaseJsonMaker {
     private final Map<String, JsonMold> propertiesMap = new HashMap<>();
-    private Set<String> requiredFields = null;
+    BaseConstraint constraint;
 
-    public ObjectJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) throws Exception {
-        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
+    public ObjectJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
+        super(schemaPath, schemaNode, currentJsonMold, context);
         JsonNode propertiesNode = schemaNode.get(Keyword.PROPERTIES.getName());
 
-        requiredFields = currentJsonMold.getRequiredFields();
+        Set<String> requiredFields = currentJsonMold.getRequiredFields();
 
         Iterator<String> properties = propertiesNode.fieldNames();
         while (properties.hasNext()) {
@@ -35,6 +36,7 @@ public class ObjectJsonMaker extends BaseJsonMaker {
             propertiesMap.put(propertyName, jsonMold.initialize());
         }
 
+        constraint = new BaseConstraint(getRequired(), getNullable());
     }
 
     @Override

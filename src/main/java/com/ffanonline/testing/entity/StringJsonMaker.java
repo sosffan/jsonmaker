@@ -12,10 +12,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class StringJsonMaker extends BaseJsonMaker {
-    StringBaseConstraint constraint = null;
+    StringBaseConstraint constraint;
 
-    public StringJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) {
-        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
+    public StringJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+        super(schemaPath, schemaNode, currentJsonMold, context);
 
         JsonNode patternNode = schemaNode.get(Keyword.PATTERN.getName());
         JsonNode maxLengthNode = schemaNode.get(Keyword.MAX_LENGTH.getName());
@@ -35,7 +35,7 @@ public class StringJsonMaker extends BaseJsonMaker {
             }
         }
 
-        constraint = new StringBaseConstraint(minLength, maxLength, pattern, enumSet, isRequired);
+        constraint = new StringBaseConstraint(minLength, maxLength, pattern, enumSet, getRequired(), getNullable());
     }
 
     @Override

@@ -9,10 +9,10 @@ import com.ffanonline.testing.constraints.NumberBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
 
 public class NumberJsonMaker extends BaseJsonMaker {
-    NumberBaseConstraint constraint = null;
+    NumberBaseConstraint constraint;
 
-    public NumberJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) {
-        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
+    public NumberJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+        super(schemaPath, schemaNode, currentJsonMold, context);
 
         JsonNode minimumNode = schemaNode.get(Keyword.MINIMUM.getName());
         JsonNode maximumNode = schemaNode.get(Keyword.MAXIMUM.getName());
@@ -22,7 +22,7 @@ public class NumberJsonMaker extends BaseJsonMaker {
         int maximum = maximumNode == null ? -1 : maximumNode.intValue();
         int multipleOf = multipleOfNode == null ? -1 : multipleOfNode.intValue();
 
-        constraint = new NumberBaseConstraint(minimum, maximum, multipleOf, isRequired);
+        constraint = new NumberBaseConstraint(minimum, maximum, multipleOf, getRequired(), getNullable());
     }
 
     @Override

@@ -8,8 +8,9 @@ public class StringBaseConstraint extends BaseConstraint {
     private final String pattern;
     private final Set<String> enumSet;
 
-    public StringBaseConstraint(int minLength, int maxLength, String pattern, Set<String> enumSet, Boolean isRequired) {
-        super(isRequired);
+    public StringBaseConstraint(int minLength, int maxLength, String pattern, Set<String> enumSet,
+                                Boolean isRequired, Boolean isNullable) {
+        super(isRequired, isNullable);
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.pattern = pattern;

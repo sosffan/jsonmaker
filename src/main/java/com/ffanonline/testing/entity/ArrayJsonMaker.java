@@ -15,8 +15,8 @@ public class ArrayJsonMaker extends BaseJsonMaker {
     private final JsonMold itemSchema;
     private final ArrayBaseConstraint constraint;
 
-    public ArrayJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) throws Exception {
-        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
+    public ArrayJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
+        super(schemaPath, schemaNode, currentJsonMold, context);
 
         JsonNode minItemsNode = schemaNode.get(Keyword.MIN_ITEMS.getName());
         JsonNode maxItemsNode = schemaNode.get(Keyword.MAX_ITEMS.getName());
@@ -24,11 +24,12 @@ public class ArrayJsonMaker extends BaseJsonMaker {
         int minItems = minItemsNode == null ? 0 : minItemsNode.intValue();
         int maxItems = maxItemsNode == null ? -1 : maxItemsNode.intValue();
 
-        constraint = new ArrayBaseConstraint(minItems, maxItems, isRequired);
-
+        constraint = new ArrayBaseConstraint(minItems, maxItems, getRequired(), getNullable());
 
         JsonNode itemsNode = schemaNode.get(Keyword.ITEMS.getName());
-        this.itemSchema = new JsonMold(context, schemaPath + "[]", itemsNode, currentJsonMold, isRequired);  // should this be the same as isRequired.
+
+        // isRequired in below JsonMold should be false?
+        this.itemSchema = new JsonMold(context, schemaPath + "[]", itemsNode, currentJsonMold, true);  // should this be the same as isRequired.
 //        this.itemSchema = new JsonSchema(context, null, itemsNode, currentJsonMold);
         this.itemSchema.initialize();
     }
@@ -36,7 +37,7 @@ public class ArrayJsonMaker extends BaseJsonMaker {
     @Override
     public JsonNode create(JsonDataCreator creator) throws Exception {
         ObjectNode node = getContext().getMapper().createObjectNode();
-        ArrayNode arrayNode = null;
+        ArrayNode arrayNode;
         if (getFieldName() != null) {
             arrayNode = node.putArray(getFieldName());
         } else {

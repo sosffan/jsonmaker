@@ -2,13 +2,15 @@ package com.ffanonline.testing;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class JsonMoldContext {
     private final JsonNode rootNode;
     private final ObjectMapper mapper;
 
-    private ObjectNode resultRootNode;
+    private final Map<String, FieldInformation> fieldsInfo = new HashMap<>();
 
     private int maxItems = 20;
 
@@ -33,11 +35,39 @@ public class JsonMoldContext {
         this.maxItems = maxItems;
     }
 
-    public ObjectNode getResultRootNode() {
-        return resultRootNode;
+    public void addFieldInfo(String jsonPath, Boolean isRequired, Boolean isNullable) {
+        FieldInformation fieldInfo = new FieldInformation(isRequired, isNullable);
+        fieldsInfo.put(jsonPath, fieldInfo);
     }
 
-    public void setResultRootNode(ObjectNode resultRootNode) {
-        this.resultRootNode = resultRootNode;
+    public FieldInformation getFieldInfo(String jsonPath) {
+        return fieldsInfo.get(jsonPath);
+    }
+
+    public void markAsTraversed(String path) {
+        fieldsInfo.get(path).isTraversed = true;
+    }
+
+    public class FieldInformation {
+        private final Boolean isRequired;
+        private final Boolean isNullable;
+        private Boolean isTraversed = false;
+
+        FieldInformation(Boolean isRequired, Boolean isNullable) {
+            this.isRequired = isRequired;
+            this.isNullable = isNullable;
+        }
+
+        public Boolean getRequired() {
+            return isRequired;
+        }
+
+        public Boolean getNullable() {
+            return isNullable;
+        }
+
+        public Boolean getTraversed() {
+            return isTraversed;
+        }
     }
 }

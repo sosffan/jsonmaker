@@ -23,7 +23,7 @@
           "type": "number"
         },
         "c": {
-          "type": "array",
+          "type": ["array", "null"],
           "items": {
             "type": "number"
           }

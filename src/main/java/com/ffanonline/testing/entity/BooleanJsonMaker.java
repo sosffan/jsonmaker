@@ -9,10 +9,11 @@ import com.ffanonline.testing.creator.JsonDataCreator;
 
 public class BooleanJsonMaker extends BaseJsonMaker {
     BaseConstraint constraint;
-    public BooleanJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context, Boolean isRequired) {
-        super(schemaPath, schemaNode, currentJsonMold, context, isRequired);
 
-        constraint = new BaseConstraint(isRequired);
+    public BooleanJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+        super(schemaPath, schemaNode, currentJsonMold, context);
+
+        constraint = new BaseConstraint(getRequired(), getNullable());
     }
 
     @Override

@@ -5,8 +5,8 @@ public class NumberBaseConstraint extends BaseConstraint {
     private final int maximum;
     private final int multipleOf;
 
-    public NumberBaseConstraint(int minimum, int maximum, int multipleOf, Boolean isRequired) {
-        super(isRequired);
+    public NumberBaseConstraint(int minimum, int maximum, int multipleOf, Boolean isRequired, Boolean isNullable) {
+        super(isRequired, isNullable);
         this.minimum = minimum;
         this.maximum = maximum;
         this.multipleOf = multipleOf;

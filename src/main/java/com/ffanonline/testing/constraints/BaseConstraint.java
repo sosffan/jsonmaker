@@ -1,17 +1,11 @@
 package com.ffanonline.testing.constraints;
 
 public class BaseConstraint {
-    Boolean isRequired = false;
+    private final Boolean isNullable;
+    private final Boolean isRequired;
 
-    public BaseConstraint(Boolean isRequired) {
+    public BaseConstraint(Boolean isRequired, Boolean isNullable) {
         this.isRequired = isRequired;
-    }
-
-    public Boolean getRequiredField() {
-        return isRequired;
-    }
-
-    public void setRequiredField(Boolean isRequired) {
-        this.isRequired = isRequired;
+        this.isNullable = isNullable;
     }
 }

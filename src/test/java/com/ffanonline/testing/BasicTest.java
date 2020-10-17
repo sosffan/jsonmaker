@@ -23,15 +23,13 @@ public class BasicTest {
 
     @Test
     public void test01() throws Exception {
-        InputStream inputStream = this.getClass().getResourceAsStream("/schemas/schema03.jsd");
+        InputStream inputStream = this.getClass().getResourceAsStream("/schemas/schema00.jsd");
 
 
         JsonMold schema = JsonMoldFactory.getInstance(SpecVersion.VersionFlag.V4).getJsonMold(inputStream).initialize();
-        //JsonNode node =schema.assembleJson(new RandomJsonCreator(), null);
         String nodeString = schema.assembleJsonString(new RandomJsonCreator());
 
-
-        System.out.println(nodeString);
+        logger.info(nodeString);
     }
 
     @Test
@@ -51,7 +49,6 @@ public class BasicTest {
     public void testBasicTypes() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/basicTypes.jsd");
 
-        System.out.println("!!!!!!!!!!!!!1");
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         JsonNode nodeResult = schema.assembleJson(new RandomJsonCreator());
         logger.info(mappe.writeValueAsString(nodeResult));
