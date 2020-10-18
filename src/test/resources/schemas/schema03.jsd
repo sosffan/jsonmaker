@@ -15,5 +15,6 @@
       },
       "required": ["c"]
     }
-  }
+  },
+  "required": ["prop"]
 }

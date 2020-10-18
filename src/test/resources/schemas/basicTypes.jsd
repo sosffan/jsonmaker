@@ -26,5 +26,6 @@
         "booleanType"
       ]
     }
-  }
+  },
+  "required": ["prop"]
 }

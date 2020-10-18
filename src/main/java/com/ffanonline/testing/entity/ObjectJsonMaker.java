@@ -40,19 +40,34 @@ public class ObjectJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
+            getContext().markAsTraversed(jsonPath);
+
+            switch (type) {
+                case 1:
+                    if (!getRequired()) return null;
+                    break;
+                case 2:
+                    if (getNullable()) return generateNullNode();
+                    break;
+            }
+        }
 
         ObjectNode on = getContext().getMapper().createObjectNode();
+        ObjectNode propRootNode;
 
         if (getFieldName() != null) {
-            on = on.putObject(getFieldName());
+            propRootNode = on.putObject(getFieldName());
+        } else {
+            propRootNode = on;
         }
 
         for (String propertyName : propertiesMap.keySet()) {
             JsonMold schema = propertiesMap.get(propertyName);
-            ObjectNode node = (ObjectNode) schema.assembleJson(creator);
+            ObjectNode node = (ObjectNode) schema.assembleJson(creator, type, jsonPath);
             if (node != null) {
-                on.setAll(node);
+                propRootNode.setAll(node);
             }
         }
 

@@ -71,7 +71,11 @@ public class JsonMold {
 
 
     public JsonNode assembleJson(JsonDataCreator creator) throws Exception {
-        return this.maker.create(creator);
+        return assembleJson(creator, 0, null);
+    }
+
+    public JsonNode assembleJson(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+        return this.maker.create(creator, type, jsonPath);
     }
 
     public String assembleJsonString(JsonDataCreator creator) throws Exception {
@@ -130,5 +134,22 @@ public class JsonMold {
 
     public Set<String> getRequiredFields() {
         return requiredFields;
+    }
+
+    public Map<String, JsonNode> assembleJsonCollection(JsonDataCreator creator, int type) throws Exception {
+
+        Map<String, JsonNode> results = new HashMap<>();
+
+        // todo: filter only required jsonNode, if jsonNode not match any type, then skill
+
+        for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
+
+            JsonNode node = this.maker.create(creator, type, fieldInfo.getKey());
+
+            results.put(fieldInfo.getKey(), node);
+
+        }
+
+        return results;
     }
 }

@@ -26,9 +26,22 @@ public class IntegerJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) {
+    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
+            getContext().markAsTraversed(jsonPath);
+
+            switch (type) {
+                case 1:
+                    if (!getRequired()) return null;
+                    break;
+                case 2:
+                    if (getNullable()) return generateNullNode();
+                    break;
+            }
+        }
 
         Long value = creator.generateIntegerField(constraint, getFieldName(), getSchemaPath());
+
         if (getFieldName() == null) {
             return LongNode.valueOf(value);
         } else {

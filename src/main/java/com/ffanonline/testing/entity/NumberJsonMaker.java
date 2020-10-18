@@ -26,9 +26,22 @@ public class NumberJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) {
+    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
+            getContext().markAsTraversed(jsonPath);
+
+            switch (type) {
+                case 1:
+                    if (!getRequired()) return null;
+                    break;
+                case 2:
+                    if (getNullable()) return generateNullNode();
+                    break;
+            }
+        }
 
         Double value = creator.generateNumberField(constraint, getFieldName(), getSchemaPath());
+
         if (getFieldName() == null) {
             return DoubleNode.valueOf(value);
         } else {

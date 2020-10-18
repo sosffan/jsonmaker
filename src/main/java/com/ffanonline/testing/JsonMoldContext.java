@@ -48,6 +48,10 @@ public class JsonMoldContext {
         fieldsInfo.get(path).isTraversed = true;
     }
 
+    public Map<String, FieldInformation> getFieldsInfo() {
+        return this.fieldsInfo;
+    }
+
     public class FieldInformation {
         private final Boolean isRequired;
         private final Boolean isNullable;

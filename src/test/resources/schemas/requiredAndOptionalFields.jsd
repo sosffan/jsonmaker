@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "object with properties",
+  "type": "object",
+  "properties": {
+    "prop": {
+      "type": "object",
+      "properties": {
+        "stringType": {
+          "type": "string"
+        },
+        "integerType": {
+          "type": "integer"
+        },
+        "numberType": {
+          "type": "number"
+        },
+        "booleanType": {
+          "type": "boolean"
+        },
+        "objectType": {
+          "type": "object",
+          "properties": {
+            "A" : {
+              "type": "integer"
+            },
+            "B": {
+              "type": "string"
+            }
+          },
+          "required": ["A"]
+        },
+        "arrayType": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "stringTypeOptional": {
+          "type": "string"
+        },
+        "integerTypeOptional": {
+          "type": "integer"
+        },
+        "numberTypeOptional": {
+          "type": "number"
+        },
+        "booleanTypeOptional": {
+          "type": "boolean"
+        },
+        "objectTypeOptional": {
+          "type": "object",
+          "properties": {
+            "A" : {
+              "type": "integer"
+            },
+            "B": {
+              "type": "string"
+            }
+          },
+          "required": ["A"]
+        },
+        "arrayTypeOptional": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "stringType",
+        "integerType",
+        "numberType",
+        "booleanType",
+        "objectType",
+        "arrayType"
+      ]
+    }
+  },
+  "required": ["prop"]
+}

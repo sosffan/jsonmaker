@@ -17,8 +17,23 @@ public class BooleanJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) {
+    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
+            getContext().markAsTraversed(jsonPath);
+
+            switch (type) {
+                case 1:
+                    if (!getRequired()) return null;
+                    break;
+                case 2:
+                    if (getNullable()) return generateNullNode();
+                    break;
+            }
+        }
+
         Boolean value = creator.generateBooleanField(constraint, getFieldName(), getSchemaPath());
+
+
         if (getFieldName() == null) {
             return BooleanNode.valueOf(value);
         } else {

@@ -35,7 +35,20 @@ public class ArrayJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
+            getContext().markAsTraversed(jsonPath);
+
+            switch (type) {
+                case 1:
+                    if (!getRequired()) return null;
+                    break;
+                case 2:
+                    if (getNullable()) return generateNullNode();
+                    break;
+            }
+        }
+
         ObjectNode node = getContext().getMapper().createObjectNode();
         ArrayNode arrayNode;
         if (getFieldName() != null) {
@@ -52,7 +65,7 @@ public class ArrayJsonMaker extends BaseJsonMaker {
             count = RandomUtils.nextInt(constraint.getMinItems(), constraint.getMaxItems());
         }
         for (int i = 0; i < count; i++) {
-            arrayNode.add(itemSchema.assembleJson(creator));
+            arrayNode.add(itemSchema.assembleJson(creator, type, jsonPath));
         }
 
         return node;

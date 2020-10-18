@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "object with properties",
+  "type": "object",
+  "properties": {
+    "prop": {
+      "type": "object",
+      "properties": {
+        "objectType": {
+          "type": "object",
+          "properties": {
+            "A" : {
+              "type": "integer"
+            }
+          },
+          "required": ["A"]
+        },
+        "arrayType": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "objectTypeOptional": {
+          "type": "object",
+          "properties": {
+            "A" : {
+              "type": "integer"
+            }
+          },
+          "required": ["A"]
+        },
+        "arrayTypeOptional": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "objectType",
+        "arrayType"
+      ]
+    }
+  },
+  "required": ["prop"]
+}
