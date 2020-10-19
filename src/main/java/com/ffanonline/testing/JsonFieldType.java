@@ -6,21 +6,21 @@ import com.ffanonline.testing.entity.*;
 import java.lang.reflect.Constructor;
 
 public enum JsonFieldType {
-    OBJECT("object", ObjectJsonMaker.class),
-    ARRAY("array", ArrayJsonMaker.class),
-    STRING("string", StringJsonMaker.class),
-    NUMBER("number", NumberJsonMaker.class),
-    INTEGER("integer", IntegerJsonMaker.class),
-    BOOLEAN("boolean", BooleanJsonMaker.class),
-    NULL("null", StringJsonMaker.class),
-    UNDEFINED("undefined", StringJsonMaker.class);
+    OBJECT("object", ObjectJsonGenerator.class),
+    ARRAY("array", ArrayJsonGenerator.class),
+    STRING("string", StringJsonGenerator.class),
+    NUMBER("number", NumberJsonGenerator.class),
+    INTEGER("integer", IntegerJsonGenerator.class),
+    BOOLEAN("boolean", BooleanJsonGenerator.class),
+    NULL("null", StringJsonGenerator.class),
+    UNDEFINED("undefined", StringJsonGenerator.class);
 
     private final String name;
-    private final Class maker;
+    private final Class generator;
 
-    JsonFieldType(String type, Class maker) {
+    JsonFieldType(String type, Class generator) {
         this.name = type;
-        this.maker = maker;
+        this.generator = generator;
     }
 
     public static JsonFieldType getByValue(String value) {
@@ -37,8 +37,8 @@ public enum JsonFieldType {
         return this.name;
     }
 
-    public BaseJsonMaker newJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentMold, JsonMoldContext context, Boolean isRequired) throws Exception {
-        Constructor<BaseJsonMaker> c = ((Class<BaseJsonMaker>) maker).getConstructor(String.class, JsonNode.class, JsonMold.class, JsonMoldContext.class);
+    public BaseJsonGenerator newJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentMold, JsonMoldContext context, Boolean isRequired) throws Exception {
+        Constructor<BaseJsonGenerator> c = ((Class<BaseJsonGenerator>) generator).getConstructor(String.class, JsonNode.class, JsonMold.class, JsonMoldContext.class);
 
         return c.newInstance(schemaPath, schemaNode, currentMold, context);
     }

@@ -7,21 +7,21 @@ import com.ffanonline.testing.JsonMoldContext;
 import com.ffanonline.testing.constraints.BaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
 
-public class BooleanJsonMaker extends BaseJsonMaker {
+public class BooleanJsonGenerator extends BaseJsonGenerator {
     BaseConstraint constraint;
 
-    public BooleanJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+    public BooleanJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
         super(schemaPath, schemaNode, currentJsonMold, context);
 
         constraint = new BaseConstraint(getRequired(), getNullable());
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
         if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
             getContext().markAsTraversed(jsonPath);
 
-            switch (type) {
+            switch (operationType) {
                 case 1:
                     if (!getRequired()) return null;
                     break;

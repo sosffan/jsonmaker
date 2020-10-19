@@ -13,11 +13,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class ObjectJsonMaker extends BaseJsonMaker {
+public class ObjectJsonGenerator extends BaseJsonGenerator {
     private final Map<String, JsonMold> propertiesMap = new HashMap<>();
     BaseConstraint constraint;
 
-    public ObjectJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
+    public ObjectJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
         super(schemaPath, schemaNode, currentJsonMold, context);
         JsonNode propertiesNode = schemaNode.get(Keyword.PROPERTIES.getName());
 
@@ -40,11 +40,11 @@ public class ObjectJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
         if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
             getContext().markAsTraversed(jsonPath);
 
-            switch (type) {
+            switch (operationType) {
                 case 1:
                     if (!getRequired()) return null;
                     break;
@@ -65,7 +65,7 @@ public class ObjectJsonMaker extends BaseJsonMaker {
 
         for (String propertyName : propertiesMap.keySet()) {
             JsonMold schema = propertiesMap.get(propertyName);
-            ObjectNode node = (ObjectNode) schema.assembleJson(creator, type, jsonPath);
+            ObjectNode node = (ObjectNode) schema.buildJson(creator, operationType, jsonPath);
             if (node != null) {
                 propRootNode.setAll(node);
             }

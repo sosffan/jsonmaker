@@ -9,7 +9,7 @@ import com.ffanonline.testing.JsonMoldContext;
 import com.ffanonline.testing.creator.JsonDataCreator;
 import com.ffanonline.testing.utils.Common;
 
-public abstract class BaseJsonMaker {
+public abstract class BaseJsonGenerator {
 
     private final String schemaPath;
     private final JsonNode schemaNode;
@@ -20,7 +20,7 @@ public abstract class BaseJsonMaker {
     private final Boolean isRequired;
     private final Boolean isNullable;
 
-    public BaseJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+    public BaseJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
         this.schemaPath = schemaPath;
         this.schemaNode = schemaNode;
         this.currentJsonMold = currentJsonMold;
@@ -43,7 +43,7 @@ public abstract class BaseJsonMaker {
      * @return
      * @throws Exception
      */
-    public abstract JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception;
+    public abstract JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception;
 
     public String getSchemaPath() {
         return schemaPath;
@@ -75,7 +75,7 @@ public abstract class BaseJsonMaker {
 
 
     public JsonNode generateNullNode() throws Exception {
-        if (this.getClass().isInstance(ArrayJsonMaker.class)) {
+        if (this.getClass().isInstance(ArrayJsonGenerator.class)) {
             ObjectNode node = getContext().getMapper().createObjectNode();
             ArrayNode arrayNode;
             if (getFieldName() != null) {
@@ -87,7 +87,7 @@ public abstract class BaseJsonMaker {
             arrayNode.addNull();
             return node;
 
-        } else if (this.getClass().isInstance(ObjectJsonMaker.class)) {
+        } else if (this.getClass().isInstance(ObjectJsonGenerator.class)) {
             ObjectNode on = getContext().getMapper().createObjectNode();
             ObjectNode propRootNode;
 

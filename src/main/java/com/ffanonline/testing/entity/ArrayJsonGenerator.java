@@ -10,12 +10,12 @@ import com.ffanonline.testing.constraints.ArrayBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
 import org.apache.commons.lang3.RandomUtils;
 
-public class ArrayJsonMaker extends BaseJsonMaker {
+public class ArrayJsonGenerator extends BaseJsonGenerator {
 
     private final JsonMold itemSchema;
     private final ArrayBaseConstraint constraint;
 
-    public ArrayJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
+    public ArrayJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
         super(schemaPath, schemaNode, currentJsonMold, context);
 
         JsonNode minItemsNode = schemaNode.get(Keyword.MIN_ITEMS.getName());
@@ -35,11 +35,11 @@ public class ArrayJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
         if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
             getContext().markAsTraversed(jsonPath);
 
-            switch (type) {
+            switch (operationType) {
                 case 1:
                     if (!getRequired()) return null;
                     break;
@@ -65,7 +65,7 @@ public class ArrayJsonMaker extends BaseJsonMaker {
             count = RandomUtils.nextInt(constraint.getMinItems(), constraint.getMaxItems());
         }
         for (int i = 0; i < count; i++) {
-            arrayNode.add(itemSchema.assembleJson(creator, type, jsonPath));
+            arrayNode.add(itemSchema.buildJson(creator, operationType, jsonPath));
         }
 
         return node;

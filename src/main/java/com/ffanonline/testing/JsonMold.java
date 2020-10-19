@@ -2,7 +2,7 @@ package com.ffanonline.testing;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ffanonline.testing.creator.JsonDataCreator;
-import com.ffanonline.testing.entity.BaseJsonMaker;
+import com.ffanonline.testing.entity.BaseJsonGenerator;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ public class JsonMold {
     private final Set<String> requiredFields = new HashSet<String>();
     private final JsonMoldContext context;
     private final Boolean isRequired;
-    private BaseJsonMaker maker;
+    private BaseJsonGenerator generator;
     private JsonNode schemaNode; // Value of the property
     private String schemaPath = "#"; // Json Path
     private JsonMold parentSchema = null;
@@ -55,13 +55,13 @@ public class JsonMold {
         context.addFieldInfo(schemaPath, isRequired, isNullable);
 
         if (this.types.contains(JsonFieldType.OBJECT.getName())) {
-            this.maker = JsonFieldType.OBJECT.newJsonMaker(this.schemaPath, this.schemaNode, this, this.context, isRequired);
+            this.generator = JsonFieldType.OBJECT.newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context, isRequired);
         } else if (this.types.contains(JsonFieldType.ARRAY.getName())) {
-            this.maker = JsonFieldType.ARRAY.newJsonMaker(this.schemaPath, this.schemaNode, this, this.context, isRequired);
+            this.generator = JsonFieldType.ARRAY.newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context, isRequired);
         } else {
-            for (String a : this.types) {
-                if (!a.equals("null")) {
-                    this.maker = JsonFieldType.getByValue(a).newJsonMaker(this.schemaPath, this.schemaNode, this, this.context, isRequired);
+            for (String type : this.types) {
+                if (!type.equals("null")) {
+                    this.generator = JsonFieldType.getByValue(type).newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context, isRequired);
                 }
             }
         }
@@ -70,16 +70,16 @@ public class JsonMold {
     }
 
 
-    public JsonNode assembleJson(JsonDataCreator creator) throws Exception {
-        return assembleJson(creator, 0, null);
+    public JsonNode buildJson(JsonDataCreator creator) throws Exception {
+        return buildJson(creator, 0, null);
     }
 
-    public JsonNode assembleJson(JsonDataCreator creator, int type, String jsonPath) throws Exception {
-        return this.maker.create(creator, type, jsonPath);
+    public JsonNode buildJson(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+        return this.generator.create(creator, type, jsonPath);
     }
 
-    public String assembleJsonString(JsonDataCreator creator) throws Exception {
-        JsonNode node = assembleJson(creator);
+    public String generateJsonString(JsonDataCreator creator) throws Exception {
+        JsonNode node = buildJson(creator);
         return context.getMapper().writeValueAsString(node);
     }
 
@@ -136,15 +136,15 @@ public class JsonMold {
         return requiredFields;
     }
 
-    public Map<String, JsonNode> assembleJsonCollection(JsonDataCreator creator, int type) throws Exception {
+    public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType) throws Exception {
 
         Map<String, JsonNode> results = new HashMap<>();
 
-        // todo: filter only required jsonNode, if jsonNode not match any type, then skill
+        // todo: filter only required jsonNode, if jsonNode not match any operationType, then skill
 
         for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
 
-            JsonNode node = this.maker.create(creator, type, fieldInfo.getKey());
+            JsonNode node = this.generator.create(creator, operationType, fieldInfo.getKey());
 
             results.put(fieldInfo.getKey(), node);
 

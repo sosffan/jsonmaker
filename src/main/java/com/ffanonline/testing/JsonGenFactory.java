@@ -6,15 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class JsonMoldFactory {
+public class JsonGenFactory {
 
     private final ObjectMapper mapper;
 
-    private JsonMoldFactory(ObjectMapper mapper) {
+    private JsonGenFactory(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
-    public static JsonMoldFactory getInstance(SpecVersion.VersionFlag versionFlag) {
+    public static JsonGenFactory getInstance(SpecVersion.VersionFlag versionFlag) {
         return new Builder().build();
     }
 
@@ -57,8 +57,8 @@ public class JsonMoldFactory {
         private Builder() {
         }
 
-        private JsonMoldFactory build() {
-            return new JsonMoldFactory(objectMapper);
+        private JsonGenFactory build() {
+            return new JsonGenFactory(objectMapper);
         }
     }
 

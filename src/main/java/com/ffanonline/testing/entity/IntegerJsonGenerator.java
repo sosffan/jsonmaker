@@ -8,10 +8,10 @@ import com.ffanonline.testing.Keyword;
 import com.ffanonline.testing.constraints.NumberBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
 
-public class IntegerJsonMaker extends BaseJsonMaker {
+public class IntegerJsonGenerator extends BaseJsonGenerator {
     NumberBaseConstraint constraint;
 
-    public IntegerJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+    public IntegerJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
         super(schemaPath, schemaNode, currentJsonMold, context);
 
         JsonNode minimumNode = schemaNode.get(Keyword.MINIMUM.getName());
@@ -26,11 +26,11 @@ public class IntegerJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
         if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
             getContext().markAsTraversed(jsonPath);
 
-            switch (type) {
+            switch (operationType) {
                 case 1:
                     if (!getRequired()) return null;
                     break;

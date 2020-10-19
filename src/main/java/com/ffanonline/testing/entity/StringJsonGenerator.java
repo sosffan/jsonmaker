@@ -11,10 +11,10 @@ import com.ffanonline.testing.creator.JsonDataCreator;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StringJsonMaker extends BaseJsonMaker {
+public class StringJsonGenerator extends BaseJsonGenerator {
     StringBaseConstraint constraint;
 
-    public StringJsonMaker(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+    public StringJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
         super(schemaPath, schemaNode, currentJsonMold, context);
 
         JsonNode patternNode = schemaNode.get(Keyword.PATTERN.getName());
@@ -39,11 +39,11 @@ public class StringJsonMaker extends BaseJsonMaker {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int type, String jsonPath) throws Exception {
+    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
         if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
             getContext().markAsTraversed(jsonPath);
 
-            switch (type) {
+            switch (operationType) {
                 case 1:
                     if (!getRequired()) return null;
                     break;
