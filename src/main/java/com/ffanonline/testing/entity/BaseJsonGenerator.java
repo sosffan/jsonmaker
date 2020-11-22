@@ -108,4 +108,18 @@ public abstract class BaseJsonGenerator {
 
         }
     }
+
+    JsonNode handleOperationType(int operationType, String jsonPath) throws Exception {
+        getContext().markAsTraversed(jsonPath);
+
+        switch (operationType) {
+            case 1:
+                if (!getRequired()) return null;
+                break;
+            case 2:
+                if (getNullable()) return generateNullNode();
+                break;
+        }
+        throw new Exception("no valid operationType");
+    }
 }
