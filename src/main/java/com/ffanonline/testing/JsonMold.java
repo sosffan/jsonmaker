@@ -1,8 +1,13 @@
 package com.ffanonline.testing;
 
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ffanonline.testing.creator.JsonDataCreator;
 import com.ffanonline.testing.entity.BaseJsonGenerator;
+import com.ffanonline.testing.utils.Common;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -136,6 +141,8 @@ public class JsonMold {
         return requiredFields;
     }
 
+    // Generate Json collection, which to crawl the json schema to generate multiple json node that matchs the operationType. (one match one Json)
+    // operationType: 1-operational field to be removed, 2-nullable filed to be null
     public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType) throws Exception {
 
         Map<String, JsonNode> results = new HashMap<>();
@@ -151,5 +158,41 @@ public class JsonMold {
         }
 
         return results;
+    }
+
+    public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType, JsonNode sampleJsonNode) {
+        Map<String, JsonNode> results = new HashMap<>();
+        for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
+            String jsonPath = fieldInfo.getKey();
+            JsonPointer pointer = JsonPointer.compile(jsonPath);
+            JsonNode node = sampleJsonNode.at(pointer);
+            String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
+
+            switch (operationType) {
+                case 1:
+                    if (!fieldInfo.getValue().getRequired()) {
+                        JsonNode parentNode = sampleJsonNode.at(pointer.head());
+                        if (parentNode instanceof ObjectNode) {
+                            ObjectNode oNode = (ObjectNode) parentNode;
+                            oNode.remove(fieldName);
+                        }
+                    }
+                    break;
+                case 2:
+                    if (fieldInfo.getValue().getNullable()) {
+                        node = NullNode.getInstance();
+                    }
+                    break;
+            }
+
+            results.put(jsonPath, sampleJsonNode);
+        }
+        return results;
+    }
+
+
+    public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType, String sampleJsonString) throws JsonProcessingException {
+        JsonNode node = context.getMapper().readTree(sampleJsonString);
+        return generateJsonCollection(creator, operationType, node);
     }
 }
