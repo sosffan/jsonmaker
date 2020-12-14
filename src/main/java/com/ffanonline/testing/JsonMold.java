@@ -9,10 +9,9 @@ import com.ffanonline.testing.creator.JsonDataCreator;
 import com.ffanonline.testing.entity.BaseJsonGenerator;
 import com.ffanonline.testing.utils.Common;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 public class JsonMold {
 
@@ -160,7 +159,7 @@ public class JsonMold {
         return results;
     }
 
-    public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType, JsonNode sampleJsonNode) {
+    public Map<String, JsonNode> generateJsonCollection(int operationType, JsonNode sampleJsonNode) {
         Map<String, JsonNode> results = new HashMap<>();
         for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
             String jsonPath = fieldInfo.getKey();
@@ -180,19 +179,55 @@ public class JsonMold {
                     break;
                 case 2:
                     if (fieldInfo.getValue().getNullable()) {
-                        node = NullNode.getInstance();
+                        node = NullNode.getInstance(); // TODO: should be set value from parent.
                     }
                     break;
             }
 
-            results.put(jsonPath, sampleJsonNode);
+            results.put(jsonPath, sampleJsonNode); // TODO: should use cloned jsonObject instead of sampleJsonNode, because the value will change during the for loop
         }
         return results;
     }
 
 
-    public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType, String sampleJsonString) throws JsonProcessingException {
+    public Map<String, JsonNode> generateJsonCollection(int operationType, String sampleJsonString) throws JsonProcessingException {
         JsonNode node = context.getMapper().readTree(sampleJsonString);
-        return generateJsonCollection(creator, operationType, node);
+        return generateJsonCollection(operationType, node);
+    }
+
+    public Map<String, JsonNode> generateJsonCollection(String sampleJsonString, String fieldFilePath) throws IOException {
+        InputStream fieldStream = this.getClass().getResourceAsStream(fieldFilePath);
+        JsonNode sampleJsonNode = context.getMapper().readTree(sampleJsonString);
+
+        JsonNode fieldPathRootNode = context.getMapper().readTree(fieldStream);
+        Iterator<String> fieldNamesIterator = fieldPathRootNode.fieldNames();
+
+        Map<String, JsonNode> result = new HashMap<>();
+
+
+        while (fieldNamesIterator.hasNext()) {
+            String fieldType = fieldNamesIterator.next();
+            List<JsonNode> fieldPathNodeList = fieldPathRootNode.findValues(fieldType);
+
+            InputStream dataStream = this.getClass().getResourceAsStream(fieldType + ".json");
+            JsonNode dataNode = context.getMapper().readTree(dataStream);
+            Iterator<JsonNode> sampleDataArray = dataNode.elements();
+
+            while (sampleDataArray.hasNext()) {
+
+                JsonNode value = sampleJsonNode;
+                JsonNode sampleData = sampleDataArray.next();
+
+                for (JsonNode fieldPathNode : fieldPathNodeList) {
+                    JsonNode node = value.at(fieldPathNode.textValue());
+                    node = sampleData; // TODO: should be set value from parent.
+                }
+
+                String key = fieldType + sampleData;
+                result.put(key, value);
+
+            }
+        }
+        return result;
     }
 }
