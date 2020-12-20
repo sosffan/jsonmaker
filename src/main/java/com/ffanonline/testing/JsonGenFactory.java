@@ -51,6 +51,23 @@ public class JsonGenFactory {
         return new JsonMold(context, schemaNode);
     }
 
+    public JsonBase getJsonBase(InputStream inputStream) {
+        JsonNode node = null;
+        try {
+            node = this.mapper.readTree(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return getJsonBase(node);
+    }
+
+    public JsonBase getJsonBase(JsonNode node) {
+        JsonMoldContext context = new JsonMoldContext(node, this.mapper);
+
+        return new JsonBase(context, node);
+    }
+
     private static class Builder {
         private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -61,5 +78,6 @@ public class JsonGenFactory {
             return new JsonGenFactory(objectMapper);
         }
     }
+
 
 }

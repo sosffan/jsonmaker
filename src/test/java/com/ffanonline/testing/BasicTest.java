@@ -15,7 +15,7 @@ import java.util.Map;
 public class BasicTest {
     private static final Logger logger = LoggerFactory.getLogger(BasicTest.class);
     private static JsonGenFactory factory;
-    private static final ObjectMapper mappe = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeAll
     public static void setup() {
@@ -40,7 +40,7 @@ public class BasicTest {
 
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         JsonNode nodeResult = schema.buildJson(new RandomJsonCreator());
-        logger.info(mappe.writeValueAsString(nodeResult));
+        logger.info(mapper.writeValueAsString(nodeResult));
 
         com.github.fge.jsonschema.main.JsonSchema jsonSchema = (com.github.fge.jsonschema.main.JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(schema.getSchemaNode());
         Assertions.assertTrue(jsonSchema.validate(nodeResult).isSuccess());
@@ -52,7 +52,7 @@ public class BasicTest {
 
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         JsonNode nodeResult = schema.buildJson(new RandomJsonCreator());
-        logger.info(mappe.writeValueAsString(nodeResult));
+        logger.info(mapper.writeValueAsString(nodeResult));
 
         com.github.fge.jsonschema.main.JsonSchema jsonSchema = (com.github.fge.jsonschema.main.JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(schema.getSchemaNode());
         Assertions.assertTrue(jsonSchema.validate(nodeResult).isSuccess());
@@ -63,7 +63,7 @@ public class BasicTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         JsonNode nodeResult = schema.buildJson(new RandomJsonCreator());
-        logger.info(mappe.writeValueAsString(nodeResult));
+        logger.info(mapper.writeValueAsString(nodeResult));
 
         com.github.fge.jsonschema.main.JsonSchema jsonSchema = (com.github.fge.jsonschema.main.JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(schema.getSchemaNode());
         Assertions.assertTrue(jsonSchema.validate(nodeResult).isSuccess());
@@ -95,6 +95,27 @@ public class BasicTest {
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         Map<String, JsonNode> nodeResults = schema.generateJsonCollection(new RandomJsonCreator(), 2);
         System.out.println();
+
+    }
+
+
+    @Test
+    public void testGenerateJsonCollectionThroughSampleForUnRequiredChecking() throws Exception {
+
+        InputStream sample = this.getClass().getResourceAsStream("/json/sample01.json");
+        InputStream schema = this.getClass().getResourceAsStream("/schemas/schema01.jsd");
+
+        JsonMold jsonMode = factory.getJsonMold(schema).initialize();
+        Map<String, JsonNode> result = jsonMode.generateJsonCollectionForUnRequiredField(sample);
+
+        for (Map.Entry<String, JsonNode> item: result.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue();
+
+            Assertions.assertTrue(node.at(path).isMissingNode());
+        }
+
+        Assertions.assertEquals(5, result.size());
 
     }
 }

@@ -162,20 +162,21 @@ public class JsonMold {
     public Map<String, JsonNode> generateJsonCollection(int operationType, JsonNode sampleJsonNode) {
         Map<String, JsonNode> results = new HashMap<>();
         for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
-            String jsonPath = fieldInfo.getKey();
+            String jsonPath = fieldInfo.getKey().replace("#", ""); //TODO: should "#" removed for root node?
             JsonPointer pointer = JsonPointer.compile(jsonPath);
-            JsonNode node = sampleJsonNode.at(pointer);
+            JsonNode resultNode = sampleJsonNode.deepCopy();
+            JsonNode node = resultNode.at(pointer);
             String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
 
             switch (operationType) {
                 case 1:
-                    if (!fieldInfo.getValue().getRequired()) {
-                        JsonNode parentNode = sampleJsonNode.at(pointer.head());
+                    if (!fieldInfo.getValue().getRequired() && !jsonPath.isEmpty()) {
+                        JsonNode parentNode = resultNode.at(pointer.head());
                         if (parentNode instanceof ObjectNode) {
                             ObjectNode oNode = (ObjectNode) parentNode;
                             oNode.remove(fieldName);
                         }
-                    }
+                    } else continue;
                     break;
                 case 2:
                     if (fieldInfo.getValue().getNullable()) {
@@ -184,7 +185,7 @@ public class JsonMold {
                     break;
             }
 
-            results.put(jsonPath, sampleJsonNode); // TODO: should use cloned jsonObject instead of sampleJsonNode, because the value will change during the for loop
+            results.put(jsonPath, resultNode);
         }
         return results;
     }
@@ -195,39 +196,14 @@ public class JsonMold {
         return generateJsonCollection(operationType, node);
     }
 
-    public Map<String, JsonNode> generateJsonCollection(String sampleJsonString, String fieldFilePath) throws IOException {
-        InputStream fieldStream = this.getClass().getResourceAsStream(fieldFilePath);
-        JsonNode sampleJsonNode = context.getMapper().readTree(sampleJsonString);
-
-        JsonNode fieldPathRootNode = context.getMapper().readTree(fieldStream);
-        Iterator<String> fieldNamesIterator = fieldPathRootNode.fieldNames();
-
-        Map<String, JsonNode> result = new HashMap<>();
+    public Map<String, JsonNode> generateJsonCollection(int operationType, InputStream sample) throws IOException {
+        JsonNode node = context.getMapper().readTree(sample);
+        return generateJsonCollection(operationType, node);
+    }
 
 
-        while (fieldNamesIterator.hasNext()) {
-            String fieldType = fieldNamesIterator.next();
-            List<JsonNode> fieldPathNodeList = fieldPathRootNode.findValues(fieldType);
-
-            InputStream dataStream = this.getClass().getResourceAsStream(fieldType + ".json");
-            JsonNode dataNode = context.getMapper().readTree(dataStream);
-            Iterator<JsonNode> sampleDataArray = dataNode.elements();
-
-            while (sampleDataArray.hasNext()) {
-
-                JsonNode value = sampleJsonNode;
-                JsonNode sampleData = sampleDataArray.next();
-
-                for (JsonNode fieldPathNode : fieldPathNodeList) {
-                    JsonNode node = value.at(fieldPathNode.textValue());
-                    node = sampleData; // TODO: should be set value from parent.
-                }
-
-                String key = fieldType + sampleData;
-                result.put(key, value);
-
-            }
-        }
-        return result;
+    public Map<String, JsonNode> generateJsonCollectionForUnRequiredField(InputStream sample) throws IOException {
+        return generateJsonCollection(1, sample);
+        //TODO: support array type
     }
 }

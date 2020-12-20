@@ -1,0 +1,10 @@
+{
+  "fullName": "Tom Bruce",
+  "firstName": "Tom",
+  "lastName": "Bruce",
+  "age": 30,
+  "educationDetails": {
+    "schoolName": "ABC University",
+    "address": "A street, B city, C province, D country"
+  }
+}
