@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "fullName": {
-      "type": "string",
+      "type": ["string","null"],
       "format": "uri"
     },
     "firstName": {
@@ -16,6 +16,10 @@
     "age": {
       "type": "integer"
     },
+    "birthday": {
+      "type": "string"
+    },
+    "startDate": {"type": "string"},
     "educationDetails": {
       "type": "object",
       "properties": {
@@ -27,7 +31,17 @@
         }
       },
       "required": ["schoolName"]
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "description": {"type": ["string", "null"]}
+        }
+      }
     }
   },
-  "required": ["fullName"]
+  "required": ["fullName", "birthday", "startDate"]
 }

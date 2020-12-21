@@ -1,9 +1,0 @@
-{
-  "date1": ["/jsonPointer"],
-  "date2": ["YYYYMMDD"],
-
-  "time1": ["HH:mm:ss"],
-  "time2": ["HHmmss"],
-
-  "datetime": [""]
-}

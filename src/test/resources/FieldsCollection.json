@@ -1,0 +1,6 @@
+{
+  "/sample_data/Date_YY-mm-dd.json": ["/birthday"],
+  "/sample_data/Date_YYYY-MM-DD.json": ["/birthday", "/startDate"],
+  "/sample_data/Date_YYYYMMDD.json": ["/birthday"]
+
+}

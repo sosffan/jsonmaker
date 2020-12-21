@@ -163,25 +163,33 @@ public class JsonMold {
         Map<String, JsonNode> results = new HashMap<>();
         for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
             String jsonPath = fieldInfo.getKey().replace("#", ""); //TODO: should "#" removed for root node?
+            //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
+            if (Common.isUnderArray(jsonPath)) {
+                jsonPath = jsonPath.replace("[]", "/0");
+            }
+
             JsonPointer pointer = JsonPointer.compile(jsonPath);
             JsonNode resultNode = sampleJsonNode.deepCopy();
-            JsonNode node = resultNode.at(pointer);
             String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
 
+            if (null == pointer.head()) { continue;} // Skip root element.
+            JsonNode parentNode = resultNode.at(pointer.head());
+            ObjectNode oNode;
+            if (parentNode instanceof ObjectNode) {
+                oNode = (ObjectNode) parentNode;
+            } else continue;
+
+            // TODO: switch first, then loop to get all parent node for each elements.
             switch (operationType) {
                 case 1:
                     if (!fieldInfo.getValue().getRequired() && !jsonPath.isEmpty()) {
-                        JsonNode parentNode = resultNode.at(pointer.head());
-                        if (parentNode instanceof ObjectNode) {
-                            ObjectNode oNode = (ObjectNode) parentNode;
-                            oNode.remove(fieldName);
-                        }
+                        oNode.remove(fieldName);
                     } else continue;
                     break;
                 case 2:
                     if (fieldInfo.getValue().getNullable()) {
-                        node = NullNode.getInstance(); // TODO: should be set value from parent.
-                    }
+                        oNode.putNull(fieldName);
+                    } else continue;
                     break;
             }
 
@@ -204,6 +212,9 @@ public class JsonMold {
 
     public Map<String, JsonNode> generateJsonCollectionForUnRequiredField(InputStream sample) throws IOException {
         return generateJsonCollection(1, sample);
-        //TODO: support array type
+    }
+
+    public Map<String, JsonNode> generateJsonCollectionForNullField(InputStream sample) throws IOException {
+        return generateJsonCollection(2, sample);
     }
 }

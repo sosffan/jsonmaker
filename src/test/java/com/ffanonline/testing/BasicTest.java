@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -115,7 +116,41 @@ public class BasicTest {
             Assertions.assertTrue(node.at(path).isMissingNode());
         }
 
-        Assertions.assertEquals(5, result.size());
+        Assertions.assertEquals(8, result.size());
+    }
+
+    @Test
+    public void testGenerateJsonCollectionThroughSampleForNullChecking() throws Exception {
+        InputStream sample = this.getClass().getResourceAsStream("/json/sample01.json");
+        InputStream schema = this.getClass().getResourceAsStream("/schemas/schema01.jsd");
+
+        JsonMold jsonMode = factory.getJsonMold(schema).initialize();
+        Map<String, JsonNode> result = jsonMode.generateJsonCollectionForNullField(sample);
+
+        for (Map.Entry<String, JsonNode> item: result.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue();
+
+            Assertions.assertTrue(node.at(path).isNull());
+        }
+
+        Assertions.assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testGenerateJsonCollectionWithSampleDataForField_BasedOnSampleJson() throws IOException {
+        InputStream sampleStream = this.getClass().getResourceAsStream("/json/sample01.json");
+        InputStream dataStream = this.getClass().getResourceAsStream("/FieldsCollection.json");
+
+        JsonSample sample = factory.getJsonSample(sampleStream);
+        Map<String, JsonNode> result = sample.generateJsonCollectionBasedOnData(dataStream);
+
+        for (Map.Entry<String, JsonNode> item: result.entrySet()) {
+            String key = item.getKey();
+            JsonNode node = item.getValue();Assertions.assertEquals(node.at(key.split("&")[2]).asText(), key.split("&")[1].replace("\"", ""));
+        }
+        Assertions.assertEquals(12, result.size());
+
 
     }
 }

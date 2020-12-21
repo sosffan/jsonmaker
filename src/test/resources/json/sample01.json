@@ -3,8 +3,19 @@
   "firstName": "Tom",
   "lastName": "Bruce",
   "age": 30,
+  "birthday": "1980-11-12",
   "educationDetails": {
     "schoolName": "ABC University",
     "address": "A street, B city, C province, D country"
-  }
+  },
+  "projects": [
+    {
+      "name": "projectOne",
+      "description": "this is the 1st project"
+    },
+    {
+      "name": "projectTwo",
+      "description": "this is the 2nd project"
+    }
+  ]
 }

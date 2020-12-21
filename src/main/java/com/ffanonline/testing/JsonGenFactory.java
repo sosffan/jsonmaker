@@ -51,7 +51,7 @@ public class JsonGenFactory {
         return new JsonMold(context, schemaNode);
     }
 
-    public JsonBase getJsonBase(InputStream inputStream) {
+    public JsonSample getJsonSample(InputStream inputStream) {
         JsonNode node = null;
         try {
             node = this.mapper.readTree(inputStream);
@@ -59,13 +59,13 @@ public class JsonGenFactory {
             e.printStackTrace();
         }
 
-        return getJsonBase(node);
+        return getJsonSample(node);
     }
 
-    public JsonBase getJsonBase(JsonNode node) {
+    public JsonSample getJsonSample(JsonNode node) {
         JsonMoldContext context = new JsonMoldContext(node, this.mapper);
 
-        return new JsonBase(context, node);
+        return new JsonSample(context, node);
     }
 
     private static class Builder {
