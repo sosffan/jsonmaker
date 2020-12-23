@@ -17,14 +17,7 @@ public class BooleanJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
-        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
-            try {
-                return handleOperationType(operationType, jsonPath);
-            } catch (Exception ignored) {
-                System.out.println("Not matched field.");
-            }
-        }
+    public JsonNode create(JsonDataCreator creator) {
 
         Boolean value = creator.generateBooleanField(constraint, getFieldName(), getSchemaPath());
 

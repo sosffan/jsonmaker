@@ -26,14 +26,7 @@ public class IntegerJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
-        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
-            try {
-                return handleOperationType(operationType, jsonPath);
-            } catch (Exception ignored) {
-                System.out.println("Not matched field.");
-            }
-        }
+    public JsonNode create(JsonDataCreator creator) throws Exception {
 
         Long value = creator.generateIntegerField(constraint, getFieldName(), getSchemaPath());
 

@@ -3,7 +3,6 @@ package com.ffanonline.testing;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ffanonline.testing.creator.JsonDataCreator;
 import com.ffanonline.testing.entity.BaseJsonGenerator;
@@ -74,12 +73,9 @@ public class JsonMold {
     }
 
 
-    public JsonNode buildJson(JsonDataCreator creator) throws Exception {
-        return buildJson(creator, 0, null);
-    }
 
-    public JsonNode buildJson(JsonDataCreator creator, int type, String jsonPath) throws Exception {
-        return this.generator.create(creator, type, jsonPath);
+    public JsonNode buildJson(JsonDataCreator creator) throws Exception {
+        return this.generator.create(creator);
     }
 
     public String generateJsonString(JsonDataCreator creator) throws Exception {
@@ -145,15 +141,12 @@ public class JsonMold {
     public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType) throws Exception {
 
         Map<String, JsonNode> results = new HashMap<>();
+        for (Map.Entry<String, JsonMoldContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
-        // todo: filter only required jsonNode, if jsonNode not match any operationType, then skill
+            JsonNode resultNode = this.generator.create(creator);
+            if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {continue;}
 
-        for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
-
-            JsonNode node = this.generator.create(creator, operationType, fieldInfo.getKey());
-
-            results.put(fieldInfo.getKey(), node);
-
+            results.put(item.getKey(), resultNode);
         }
 
         return results;
@@ -161,41 +154,49 @@ public class JsonMold {
 
     public Map<String, JsonNode> generateJsonCollection(int operationType, JsonNode sampleJsonNode) {
         Map<String, JsonNode> results = new HashMap<>();
-        for (Map.Entry<String, JsonMoldContext.FieldInformation> fieldInfo : context.getFieldsInfo().entrySet()) {
-            String jsonPath = fieldInfo.getKey().replace("#", ""); //TODO: should "#" removed for root node?
-            //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
-            if (Common.isUnderArray(jsonPath)) {
-                jsonPath = jsonPath.replace("[]", "/0");
-            }
+        for (Map.Entry<String, JsonMoldContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
-            JsonPointer pointer = JsonPointer.compile(jsonPath);
             JsonNode resultNode = sampleJsonNode.deepCopy();
-            String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
+            if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {continue;}
 
-            if (null == pointer.head()) { continue;} // Skip root element.
-            JsonNode parentNode = resultNode.at(pointer.head());
-            ObjectNode oNode;
-            if (parentNode instanceof ObjectNode) {
-                oNode = (ObjectNode) parentNode;
-            } else continue;
-
-            // TODO: switch first, then loop to get all parent node for each elements.
-            switch (operationType) {
-                case 1:
-                    if (!fieldInfo.getValue().getRequired() && !jsonPath.isEmpty()) {
-                        oNode.remove(fieldName);
-                    } else continue;
-                    break;
-                case 2:
-                    if (fieldInfo.getValue().getNullable()) {
-                        oNode.putNull(fieldName);
-                    } else continue;
-                    break;
-            }
-
-            results.put(jsonPath, resultNode);
+            results.put(item.getKey(), resultNode);
         }
         return results;
+    }
+
+    private JsonNode updateJsonBasedOnOperationType(int operationType, JsonNode resultNode, JsonMoldContext.FieldInformation fieldInfo) {
+        String jsonPath = fieldInfo.getJsonPath().replace("#", ""); //TODO: should "#" removed for root node?
+        //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
+        if (Common.isUnderArray(jsonPath)) {
+            jsonPath = jsonPath.replace("[]", "/0");
+        }
+
+        JsonPointer pointer = JsonPointer.compile(jsonPath);
+
+        String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
+
+        if (null == pointer.head()) { return null;} // Skip root element.
+        JsonNode parentNode = resultNode.at(pointer.head());
+        ObjectNode oNode;
+        if (parentNode instanceof ObjectNode) {
+            oNode = (ObjectNode) parentNode;
+        } else return null;
+
+        // TODO: switch first, then loop to get all parent node for each elements.
+        switch (operationType) {
+            case 1:
+                if (!fieldInfo.getRequired() && !jsonPath.isEmpty()) {
+                    oNode.remove(fieldName);
+                } else return null;
+                break;
+            case 2:
+                if (fieldInfo.getNullable()) {
+                    oNode.putNull(fieldName);
+                } else return null;
+                break;
+        }
+
+        return resultNode;
     }
 
 

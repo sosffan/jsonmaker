@@ -35,14 +35,7 @@ public class ArrayJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
-        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
-            try {
-                return handleOperationType(operationType, jsonPath);
-            } catch (Exception ignored) {
-                System.out.println("Not matched field.");
-            }
-        }
+    public JsonNode create(JsonDataCreator creator) throws Exception {
 
         ObjectNode node = getContext().getMapper().createObjectNode();
         ArrayNode arrayNode;
@@ -60,7 +53,7 @@ public class ArrayJsonGenerator extends BaseJsonGenerator {
             count = RandomUtils.nextInt(constraint.getMinItems(), constraint.getMaxItems());
         }
         for (int i = 0; i < count; i++) {
-            arrayNode.add(itemSchema.buildJson(creator, operationType, jsonPath));
+            arrayNode.add(itemSchema.buildJson(creator));
         }
 
         return node;

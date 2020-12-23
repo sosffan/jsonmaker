@@ -32,9 +32,6 @@ public abstract class BaseJsonGenerator {
         this.fieldName = Common.getFieldNameFromJsonPath(schemaPath);
     }
 
-    public JsonNode create(JsonDataCreator creator) throws Exception {
-        return create(creator, 0, null);
-    }
 
 
     /***
@@ -43,7 +40,7 @@ public abstract class BaseJsonGenerator {
      * @return
      * @throws Exception
      */
-    public abstract JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception;
+    public abstract JsonNode create(JsonDataCreator creator) throws Exception;
 
     public String getSchemaPath() {
         return schemaPath;

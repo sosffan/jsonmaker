@@ -40,14 +40,7 @@ public class ObjectJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator, int operationType, String jsonPath) throws Exception {
-        if (jsonPath != null && jsonPath.equals(getSchemaPath())) {
-            try {
-                return handleOperationType(operationType, jsonPath);
-            } catch (Exception ignored) {
-                System.out.println("Not matched field.");
-            }
-        }
+    public JsonNode create(JsonDataCreator creator) throws Exception {
 
         ObjectNode on = getContext().getMapper().createObjectNode();
         ObjectNode propRootNode;
@@ -60,7 +53,7 @@ public class ObjectJsonGenerator extends BaseJsonGenerator {
 
         for (String propertyName : propertiesMap.keySet()) {
             JsonMold schema = propertiesMap.get(propertyName);
-            ObjectNode node = (ObjectNode) schema.buildJson(creator, operationType, jsonPath);
+            ObjectNode node = (ObjectNode) schema.buildJson(creator);
             if (node != null) {
                 propRootNode.setAll(node);
             }

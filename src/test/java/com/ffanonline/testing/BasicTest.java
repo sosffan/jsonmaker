@@ -3,6 +3,9 @@ package com.ffanonline.testing;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffanonline.testing.creator.RandomJsonCreator;
+import com.ffanonline.testing.utils.Common;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,8 +18,8 @@ import java.util.Map;
 
 public class BasicTest {
     private static final Logger logger = LoggerFactory.getLogger(BasicTest.class);
-    private static JsonGenFactory factory;
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static JsonGenFactory factory;
 
     @BeforeAll
     public static void setup() {
@@ -27,7 +30,6 @@ public class BasicTest {
     public void test01() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/schema00.jsd");
 
-
         JsonMold schema = JsonGenFactory.getInstance(SpecVersion.VersionFlag.V4).getJsonMold(inputStream).initialize();
         String nodeString = schema.generateJsonString(new RandomJsonCreator());
 
@@ -37,13 +39,12 @@ public class BasicTest {
     @Test
     public void testGenerateObjectJsonWithProperties() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/objectWithPropertiesSchema.jsd");
-//        InputStream inputStream = this.getClass().getResourceAsStream("/schemas/schema03.jsd");
 
-        JsonMold schema = factory.getJsonMold(inputStream).initialize();
-        JsonNode nodeResult = schema.buildJson(new RandomJsonCreator());
+        JsonMold mold = factory.getJsonMold(inputStream).initialize();
+        JsonNode nodeResult = mold.buildJson(new RandomJsonCreator());
         logger.info(mapper.writeValueAsString(nodeResult));
 
-        com.github.fge.jsonschema.main.JsonSchema jsonSchema = (com.github.fge.jsonschema.main.JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(schema.getSchemaNode());
+        JsonSchema jsonSchema = (JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(mold.getSchemaNode());
         Assertions.assertTrue(jsonSchema.validate(nodeResult).isSuccess());
     }
 
@@ -51,22 +52,22 @@ public class BasicTest {
     public void testBasicTypes() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/basicTypes.jsd");
 
-        JsonMold schema = factory.getJsonMold(inputStream).initialize();
-        JsonNode nodeResult = schema.buildJson(new RandomJsonCreator());
+        JsonMold mold = factory.getJsonMold(inputStream).initialize();
+        JsonNode nodeResult = mold.buildJson(new RandomJsonCreator());
         logger.info(mapper.writeValueAsString(nodeResult));
 
-        com.github.fge.jsonschema.main.JsonSchema jsonSchema = (com.github.fge.jsonschema.main.JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(schema.getSchemaNode());
+        JsonSchema jsonSchema = (JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(mold.getSchemaNode());
         Assertions.assertTrue(jsonSchema.validate(nodeResult).isSuccess());
     }
 
     @Test
     public void testArrayField() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
-        JsonMold schema = factory.getJsonMold(inputStream).initialize();
-        JsonNode nodeResult = schema.buildJson(new RandomJsonCreator());
+        JsonMold mold = factory.getJsonMold(inputStream).initialize();
+        JsonNode nodeResult = mold.buildJson(new RandomJsonCreator());
         logger.info(mapper.writeValueAsString(nodeResult));
 
-        com.github.fge.jsonschema.main.JsonSchema jsonSchema = (com.github.fge.jsonschema.main.JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(schema.getSchemaNode());
+        JsonSchema jsonSchema = (JsonSchemaFactory.newBuilder()).freeze().getJsonSchema(mold.getSchemaNode());
         Assertions.assertTrue(jsonSchema.validate(nodeResult).isSuccess());
     }
 
@@ -76,8 +77,19 @@ public class BasicTest {
 
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         Map<String, JsonNode> nodeResults = schema.generateJsonCollection(new RandomJsonCreator(), 1);
-        System.out.println();
 
+        for (Map.Entry<String, JsonNode> item : nodeResults.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue();
+            logger.info("\n For field:" + path);
+            logger.info(mapper.writeValueAsString(node));
+
+            path = path.replace("#", "");
+            if (Common.isUnderArray(path)) {
+                path = path.replace("[]", "/0");
+            }
+            Assertions.assertTrue(node.at(path).isMissingNode());
+        }
     }
 
     @Test
@@ -86,7 +98,19 @@ public class BasicTest {
 
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         Map<String, JsonNode> nodeResults = schema.generateJsonCollection(new RandomJsonCreator(), 1);
-        System.out.println();
+
+        for (Map.Entry<String, JsonNode> item : nodeResults.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue();
+            logger.info("\n For field:" + path);
+            logger.info(mapper.writeValueAsString(node));
+
+            path = path.replace("#", "");
+            if (Common.isUnderArray(path)) {
+                path = path.replace("[]", "/0");
+            }
+            Assertions.assertTrue(node.at(path).isMissingNode());
+        }
     }
 
     @Test
@@ -95,8 +119,19 @@ public class BasicTest {
 
         JsonMold schema = factory.getJsonMold(inputStream).initialize();
         Map<String, JsonNode> nodeResults = schema.generateJsonCollection(new RandomJsonCreator(), 2);
-        System.out.println();
 
+        for (Map.Entry<String, JsonNode> item : nodeResults.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue();
+            logger.info("\n For field:" + path);
+            logger.info(mapper.writeValueAsString(node));
+
+            path = path.replace("#", "");
+            if (Common.isUnderArray(path)) {
+                path = path.replace("[]", "/0");
+            }
+            Assertions.assertTrue(node.at(path).isNull());
+        }
     }
 
 
@@ -109,11 +144,13 @@ public class BasicTest {
         JsonMold jsonMode = factory.getJsonMold(schema).initialize();
         Map<String, JsonNode> result = jsonMode.generateJsonCollectionForUnRequiredField(sample);
 
-        for (Map.Entry<String, JsonNode> item: result.entrySet()) {
+        for (Map.Entry<String, JsonNode> item : result.entrySet()) {
             String path = item.getKey();
             JsonNode node = item.getValue();
+            logger.info("\n For field:" + path);
+            logger.info(mapper.writeValueAsString(node));
 
-            Assertions.assertTrue(node.at(path).isMissingNode());
+            Assertions.assertTrue(node.at(path.replace("#", "")).isMissingNode());
         }
 
         Assertions.assertEquals(8, result.size());
@@ -127,9 +164,16 @@ public class BasicTest {
         JsonMold jsonMode = factory.getJsonMold(schema).initialize();
         Map<String, JsonNode> result = jsonMode.generateJsonCollectionForNullField(sample);
 
-        for (Map.Entry<String, JsonNode> item: result.entrySet()) {
+        for (Map.Entry<String, JsonNode> item : result.entrySet()) {
             String path = item.getKey();
             JsonNode node = item.getValue();
+            logger.info("\n For field:" + path);
+            logger.info(mapper.writeValueAsString(node));
+
+            path = path.replace("#", "");
+            if (Common.isUnderArray(path)) {
+                path = path.replace("[]", "/0");
+            }
 
             Assertions.assertTrue(node.at(path).isNull());
         }
@@ -145,12 +189,14 @@ public class BasicTest {
         JsonSample sample = factory.getJsonSample(sampleStream);
         Map<String, JsonNode> result = sample.generateJsonCollectionBasedOnData(dataStream);
 
-        for (Map.Entry<String, JsonNode> item: result.entrySet()) {
-            String key = item.getKey();
-            JsonNode node = item.getValue();Assertions.assertEquals(node.at(key.split("&")[2]).asText(), key.split("&")[1].replace("\"", ""));
+        for (Map.Entry<String, JsonNode> item : result.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue();
+            logger.info("\n For field:" + path);
+            logger.info(mapper.writeValueAsString(node));
+            Assertions.assertEquals(node.at(path.split("&")[2]).asText(), path.split("&")[1].replace("\"", ""));
         }
         Assertions.assertEquals(12, result.size());
-
 
     }
 }

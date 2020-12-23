@@ -36,7 +36,7 @@ public class JsonMoldContext {
     }
 
     public void addFieldInfo(String jsonPath, Boolean isRequired, Boolean isNullable) {
-        FieldInformation fieldInfo = new FieldInformation(isRequired, isNullable);
+        FieldInformation fieldInfo = new FieldInformation(jsonPath, isRequired, isNullable);
         fieldsInfo.put(jsonPath, fieldInfo);
     }
 
@@ -56,8 +56,10 @@ public class JsonMoldContext {
         private final Boolean isRequired;
         private final Boolean isNullable;
         private Boolean isTraversed = false;
+        private final String jsonPath;
 
-        FieldInformation(Boolean isRequired, Boolean isNullable) {
+        FieldInformation(String jsonPath, Boolean isRequired, Boolean isNullable) {
+            this.jsonPath = jsonPath;
             this.isRequired = isRequired;
             this.isNullable = isNullable;
         }
@@ -72,6 +74,10 @@ public class JsonMoldContext {
 
         public Boolean getTraversed() {
             return isTraversed;
+        }
+
+        public String getJsonPath() {
+            return jsonPath;
         }
     }
 }
