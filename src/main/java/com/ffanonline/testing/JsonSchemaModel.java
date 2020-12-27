@@ -20,7 +20,7 @@ public class JsonSchemaModel {
     private final Boolean isRequired;
     private BaseJsonGenerator generator;
     private JsonNode schemaNode; // Value of the property
-    private String schemaPath = "#"; // Json Path
+    private String schemaPath = ""; // Json Path, root node path is empty string - "".
     private JsonSchemaModel parentSchema = null;
     private Map<String, JsonSchemaModel> propertiesNode = new HashMap<String, JsonSchemaModel>();
 
@@ -30,7 +30,7 @@ public class JsonSchemaModel {
     }
 
     public JsonSchemaModel(JsonSchemaModelContext context, JsonNode schemaNode, JsonSchemaModel parentSchema) {
-        this(context, "#", schemaNode, parentSchema, false);
+        this(context, "", schemaNode, parentSchema, false);
     }
 
     public JsonSchemaModel(JsonSchemaModelContext context, String schemaPath, JsonNode schemaNode, JsonSchemaModel parentSchema, Boolean isRequired) {
@@ -165,7 +165,7 @@ public class JsonSchemaModel {
     }
 
     private JsonNode updateJsonBasedOnOperationType(int operationType, JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo) {
-        String jsonPath = fieldInfo.getJsonPath().replace("#", ""); //TODO: should "#" removed for root node?
+        String jsonPath = fieldInfo.getJsonPath();
         //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
         if (Common.isUnderArray(jsonPath)) {
             jsonPath = jsonPath.replace("[]", "/0");

@@ -84,7 +84,6 @@ public class BasicTest {
             logger.info("\n For field:" + path);
             logger.info(mapper.writeValueAsString(node));
 
-            path = path.replace("#", "");
             if (Common.isUnderArray(path)) {
                 path = path.replace("[]", "/0");
             }
@@ -105,7 +104,6 @@ public class BasicTest {
             logger.info("\n For field:" + path);
             logger.info(mapper.writeValueAsString(node));
 
-            path = path.replace("#", "");
             if (Common.isUnderArray(path)) {
                 path = path.replace("[]", "/0");
             }
@@ -126,7 +124,6 @@ public class BasicTest {
             logger.info("\n For field:" + path);
             logger.info(mapper.writeValueAsString(node));
 
-            path = path.replace("#", "");
             if (Common.isUnderArray(path)) {
                 path = path.replace("[]", "/0");
             }
@@ -150,7 +147,7 @@ public class BasicTest {
             logger.info("\n For field:" + path);
             logger.info(mapper.writeValueAsString(node));
 
-            Assertions.assertTrue(node.at(path.replace("#", "")).isMissingNode());
+            Assertions.assertTrue(node.at(path).isMissingNode());
         }
 
         Assertions.assertEquals(8, result.size());
@@ -170,7 +167,6 @@ public class BasicTest {
             logger.info("\n For field:" + path);
             logger.info(mapper.writeValueAsString(node));
 
-            path = path.replace("#", "");
             if (Common.isUnderArray(path)) {
                 path = path.replace("[]", "/0");
             }

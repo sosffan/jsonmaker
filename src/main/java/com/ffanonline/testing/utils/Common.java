@@ -21,13 +21,12 @@ public class Common {
     }
 
     public static JsonNode getParentNode(JsonNode rootNode, String path) {
-        String jsonPath = path.replace("#", ""); //TODO: should "#" removed for root node?
         //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
-        if (Common.isUnderArray(jsonPath)) {
-            jsonPath = jsonPath.replace("[]", "/0");
+        if (Common.isUnderArray(path)) {
+            path = path.replace("[]", "/0");
         }
 
-        JsonPointer pointer = JsonPointer.compile(jsonPath);
+        JsonPointer pointer = JsonPointer.compile(path);
 
         if (null == pointer.head()) { return null;} // Skip root element.
         return rootNode.at(pointer.head());
