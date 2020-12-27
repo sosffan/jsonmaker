@@ -2,8 +2,8 @@ package com.ffanonline.testing.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ffanonline.testing.JsonMold;
-import com.ffanonline.testing.JsonMoldContext;
+import com.ffanonline.testing.JsonSchemaModel;
+import com.ffanonline.testing.JsonSchemaModelContext;
 import com.ffanonline.testing.Keyword;
 import com.ffanonline.testing.constraints.BaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class ObjectJsonGenerator extends BaseJsonGenerator {
-    private final Map<String, JsonMold> propertiesMap = new HashMap<>();
+    private final Map<String, JsonSchemaModel> propertiesMap = new HashMap<>();
     BaseConstraint constraint;
 
-    public ObjectJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
-        super(schemaPath, schemaNode, currentJsonMold, context);
+    public ObjectJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context) throws Exception {
+        super(schemaPath, schemaNode, currentJsonSchemaModel, context);
         JsonNode propertiesNode = schemaNode.get(Keyword.PROPERTIES.getName());
 
-        Set<String> requiredFields = currentJsonMold.getRequiredFields();
+        Set<String> requiredFields = currentJsonSchemaModel.getRequiredFields();
 
         Iterator<String> properties = propertiesNode.fieldNames();
         while (properties.hasNext()) {
@@ -31,9 +31,9 @@ public class ObjectJsonGenerator extends BaseJsonGenerator {
 
             String path = schemaPath + "/" + propertyName;
             JsonNode node = propertiesNode.get(propertyName);
-            JsonMold jsonMold = new JsonMold(context, path, node, currentJsonMold, propertyIsRequired);
+            JsonSchemaModel jsonSchemaModel = new JsonSchemaModel(context, path, node, currentJsonSchemaModel, propertyIsRequired);
 
-            propertiesMap.put(propertyName, jsonMold.initialize());
+            propertiesMap.put(propertyName, jsonSchemaModel.initialize());
         }
 
         constraint = new BaseConstraint(getRequired(), getNullable());
@@ -52,7 +52,7 @@ public class ObjectJsonGenerator extends BaseJsonGenerator {
         }
 
         for (String propertyName : propertiesMap.keySet()) {
-            JsonMold schema = propertiesMap.get(propertyName);
+            JsonSchemaModel schema = propertiesMap.get(propertyName);
             ObjectNode node = (ObjectNode) schema.buildJson(creator);
             if (node != null) {
                 propRootNode.setAll(node);

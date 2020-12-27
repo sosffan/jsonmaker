@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JsonMoldContext {
+public class JsonSchemaModelContext {
     private final JsonNode rootNode;
     private final ObjectMapper mapper;
 
@@ -14,7 +14,7 @@ public class JsonMoldContext {
 
     private int maxItems = 20;
 
-    public JsonMoldContext(JsonNode rootNode, ObjectMapper mapper) {
+    public JsonSchemaModelContext(JsonNode rootNode, ObjectMapper mapper) {
         this.rootNode = rootNode;
         this.mapper = mapper;
     }

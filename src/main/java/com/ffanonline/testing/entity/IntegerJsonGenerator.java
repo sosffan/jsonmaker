@@ -2,8 +2,8 @@ package com.ffanonline.testing.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.LongNode;
-import com.ffanonline.testing.JsonMold;
-import com.ffanonline.testing.JsonMoldContext;
+import com.ffanonline.testing.JsonSchemaModel;
+import com.ffanonline.testing.JsonSchemaModelContext;
 import com.ffanonline.testing.Keyword;
 import com.ffanonline.testing.constraints.NumberBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
@@ -11,8 +11,8 @@ import com.ffanonline.testing.creator.JsonDataCreator;
 public class IntegerJsonGenerator extends BaseJsonGenerator {
     NumberBaseConstraint constraint;
 
-    public IntegerJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
-        super(schemaPath, schemaNode, currentJsonMold, context);
+    public IntegerJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context) {
+        super(schemaPath, schemaNode, currentJsonSchemaModel, context);
 
         JsonNode minimumNode = schemaNode.get(Keyword.MINIMUM.getName());
         JsonNode maximumNode = schemaNode.get(Keyword.MAXIMUM.getName());

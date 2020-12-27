@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ffanonline.testing.JsonMold;
-import com.ffanonline.testing.JsonMoldContext;
+import com.ffanonline.testing.JsonSchemaModel;
+import com.ffanonline.testing.JsonSchemaModelContext;
 import com.ffanonline.testing.creator.JsonDataCreator;
 import com.ffanonline.testing.utils.Common;
 
@@ -13,17 +13,17 @@ public abstract class BaseJsonGenerator {
 
     private final String schemaPath;
     private final JsonNode schemaNode;
-    private final JsonMold currentJsonMold;
-    private final JsonMoldContext context;
+    private final JsonSchemaModel currentJsonSchemaModel;
+    private final JsonSchemaModelContext context;
     private final String fieldName;
 
     private final Boolean isRequired;
     private final Boolean isNullable;
 
-    public BaseJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) {
+    public BaseJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context) {
         this.schemaPath = schemaPath;
         this.schemaNode = schemaNode;
-        this.currentJsonMold = currentJsonMold;
+        this.currentJsonSchemaModel = currentJsonSchemaModel;
         this.context = context;
 
         this.isRequired = context.getFieldInfo(schemaPath).getRequired();
@@ -50,11 +50,11 @@ public abstract class BaseJsonGenerator {
         return schemaNode;
     }
 
-    public JsonMold getCurrentJsonMold() {
-        return currentJsonMold;
+    public JsonSchemaModel getCurrentJsonSchemaModel() {
+        return currentJsonSchemaModel;
     }
 
-    public JsonMoldContext getContext() {
+    public JsonSchemaModelContext getContext() {
         return context;
     }
 

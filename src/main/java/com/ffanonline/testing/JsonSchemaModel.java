@@ -12,28 +12,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class JsonMold {
+public class JsonSchemaModel {
 
     private final Set<String> types = new HashSet<String>();
     private final Set<String> requiredFields = new HashSet<String>();
-    private final JsonMoldContext context;
+    private final JsonSchemaModelContext context;
     private final Boolean isRequired;
     private BaseJsonGenerator generator;
     private JsonNode schemaNode; // Value of the property
     private String schemaPath = "#"; // Json Path
-    private JsonMold parentSchema = null;
-    private Map<String, JsonMold> propertiesNode = new HashMap<String, JsonMold>();
+    private JsonSchemaModel parentSchema = null;
+    private Map<String, JsonSchemaModel> propertiesNode = new HashMap<String, JsonSchemaModel>();
 
-    public JsonMold(JsonMoldContext context, JsonNode schemaNode) {
+    public JsonSchemaModel(JsonSchemaModelContext context, JsonNode schemaNode) {
         this(context, schemaNode, null);
 
     }
 
-    public JsonMold(JsonMoldContext context, JsonNode schemaNode, JsonMold parentSchema) {
+    public JsonSchemaModel(JsonSchemaModelContext context, JsonNode schemaNode, JsonSchemaModel parentSchema) {
         this(context, "#", schemaNode, parentSchema, false);
     }
 
-    public JsonMold(JsonMoldContext context, String schemaPath, JsonNode schemaNode, JsonMold parentSchema, Boolean isRequired) {
+    public JsonSchemaModel(JsonSchemaModelContext context, String schemaPath, JsonNode schemaNode, JsonSchemaModel parentSchema, Boolean isRequired) {
         this.schemaPath = schemaPath;
         this.schemaNode = schemaNode;
         this.parentSchema = parentSchema;
@@ -41,7 +41,7 @@ public class JsonMold {
         this.isRequired = isRequired;
     }
 
-    public JsonMold initialize() throws Exception {
+    public JsonSchemaModel initialize() throws Exception {
         if (this.schemaNode.get("$ref") != null) {
             String refPath = this.schemaNode.get("$ref").textValue();
             this.schemaNode = this.context.getRootNode().at(refPath.substring(1));
@@ -112,11 +112,11 @@ public class JsonMold {
         this.schemaPath = schemaPath;
     }
 
-    public JsonMold getParentSchema() {
+    public JsonSchemaModel getParentSchema() {
         return parentSchema;
     }
 
-    public void setParentSchema(JsonMold parentSchema) {
+    public void setParentSchema(JsonSchemaModel parentSchema) {
         this.parentSchema = parentSchema;
     }
 
@@ -124,11 +124,11 @@ public class JsonMold {
         return schemaNode;
     }
 
-    public Map<String, JsonMold> getPropertiesNode() {
+    public Map<String, JsonSchemaModel> getPropertiesNode() {
         return propertiesNode;
     }
 
-    public void setPropertiesNode(Map<String, JsonMold> propertiesNode) {
+    public void setPropertiesNode(Map<String, JsonSchemaModel> propertiesNode) {
         this.propertiesNode = propertiesNode;
     }
 
@@ -136,12 +136,12 @@ public class JsonMold {
         return requiredFields;
     }
 
-    // Generate Json collection, which to crawl the json schema to generate multiple json node that matchs the operationType. (one match one Json)
+    // Generate Json bundle, which to crawl the json schema to generate multiple json node that matchs the operationType. (one match one Json)
     // operationType: 1-operational field to be removed, 2-nullable filed to be null
-    public Map<String, JsonNode> generateJsonCollection(JsonDataCreator creator, int operationType) throws Exception {
+    public Map<String, JsonNode> generateJsonBundle(JsonDataCreator creator, int operationType) throws Exception {
 
         Map<String, JsonNode> results = new HashMap<>();
-        for (Map.Entry<String, JsonMoldContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
+        for (Map.Entry<String, JsonSchemaModelContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
             JsonNode resultNode = this.generator.create(creator);
             if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {continue;}
@@ -152,9 +152,9 @@ public class JsonMold {
         return results;
     }
 
-    public Map<String, JsonNode> generateJsonCollection(int operationType, JsonNode sampleJsonNode) {
+    public Map<String, JsonNode> generateJsonBundle(int operationType, JsonNode sampleJsonNode) {
         Map<String, JsonNode> results = new HashMap<>();
-        for (Map.Entry<String, JsonMoldContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
+        for (Map.Entry<String, JsonSchemaModelContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
             JsonNode resultNode = sampleJsonNode.deepCopy();
             if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {continue;}
@@ -164,7 +164,7 @@ public class JsonMold {
         return results;
     }
 
-    private JsonNode updateJsonBasedOnOperationType(int operationType, JsonNode resultNode, JsonMoldContext.FieldInformation fieldInfo) {
+    private JsonNode updateJsonBasedOnOperationType(int operationType, JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo) {
         String jsonPath = fieldInfo.getJsonPath().replace("#", ""); //TODO: should "#" removed for root node?
         //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
         if (Common.isUnderArray(jsonPath)) {
@@ -200,22 +200,22 @@ public class JsonMold {
     }
 
 
-    public Map<String, JsonNode> generateJsonCollection(int operationType, String sampleJsonString) throws JsonProcessingException {
+    public Map<String, JsonNode> generateJsonBundle(int operationType, String sampleJsonString) throws JsonProcessingException {
         JsonNode node = context.getMapper().readTree(sampleJsonString);
-        return generateJsonCollection(operationType, node);
+        return generateJsonBundle(operationType, node);
     }
 
-    public Map<String, JsonNode> generateJsonCollection(int operationType, InputStream sample) throws IOException {
+    public Map<String, JsonNode> generateJsonBundle(int operationType, InputStream sample) throws IOException {
         JsonNode node = context.getMapper().readTree(sample);
-        return generateJsonCollection(operationType, node);
+        return generateJsonBundle(operationType, node);
     }
 
 
-    public Map<String, JsonNode> generateJsonCollectionForUnRequiredField(InputStream sample) throws IOException {
-        return generateJsonCollection(1, sample);
+    public Map<String, JsonNode> generateJsonBundleForUnRequiredField(InputStream sample) throws IOException {
+        return generateJsonBundle(1, sample);
     }
 
-    public Map<String, JsonNode> generateJsonCollectionForNullField(InputStream sample) throws IOException {
-        return generateJsonCollection(2, sample);
+    public Map<String, JsonNode> generateJsonBundleForNullField(InputStream sample) throws IOException {
+        return generateJsonBundle(2, sample);
     }
 }

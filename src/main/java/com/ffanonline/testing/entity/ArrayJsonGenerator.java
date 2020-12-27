@@ -3,8 +3,8 @@ package com.ffanonline.testing.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ffanonline.testing.JsonMold;
-import com.ffanonline.testing.JsonMoldContext;
+import com.ffanonline.testing.JsonSchemaModel;
+import com.ffanonline.testing.JsonSchemaModelContext;
 import com.ffanonline.testing.Keyword;
 import com.ffanonline.testing.constraints.ArrayBaseConstraint;
 import com.ffanonline.testing.creator.JsonDataCreator;
@@ -12,11 +12,11 @@ import org.apache.commons.lang3.RandomUtils;
 
 public class ArrayJsonGenerator extends BaseJsonGenerator {
 
-    private final JsonMold itemSchema;
+    private final JsonSchemaModel itemSchema;
     private final ArrayBaseConstraint constraint;
 
-    public ArrayJsonGenerator(String schemaPath, JsonNode schemaNode, JsonMold currentJsonMold, JsonMoldContext context) throws Exception {
-        super(schemaPath, schemaNode, currentJsonMold, context);
+    public ArrayJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context) throws Exception {
+        super(schemaPath, schemaNode, currentJsonSchemaModel, context);
 
         JsonNode minItemsNode = schemaNode.get(Keyword.MIN_ITEMS.getName());
         JsonNode maxItemsNode = schemaNode.get(Keyword.MAX_ITEMS.getName());
@@ -28,9 +28,9 @@ public class ArrayJsonGenerator extends BaseJsonGenerator {
 
         JsonNode itemsNode = schemaNode.get(Keyword.ITEMS.getName());
 
-        // isRequired in below JsonMold should be false?
-        this.itemSchema = new JsonMold(context, schemaPath + "[]", itemsNode, currentJsonMold, true);  // should this be the same as isRequired.
-//        this.itemSchema = new JsonSchema(context, null, itemsNode, currentJsonMold);
+        // isRequired in below JsonSchemaModel should be false?
+        this.itemSchema = new JsonSchemaModel(context, schemaPath + "[]", itemsNode, currentJsonSchemaModel, true);  // should this be the same as isRequired.
+//        this.itemSchema = new JsonSchema(context, null, itemsNode, currentJsonSchemaModel);
         this.itemSchema.initialize();
     }
 

@@ -1,29 +1,25 @@
 package com.ffanonline.testing;
 
-import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ffanonline.testing.utils.Common;
 
-import javax.management.monitor.CounterMonitor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-public class JsonSample {
-    private final JsonMoldContext context;
+public class JsonTemplateModel {
+    private final JsonSchemaModelContext context;
     private JsonNode jsonRootNode;
 
-    public JsonSample(JsonMoldContext context, JsonNode node) {
+    public JsonTemplateModel(JsonSchemaModelContext context, JsonNode node) {
         this.context = context;
         this.jsonRootNode = node;
     }
 
-    public JsonMoldContext getContext() {
+    public JsonSchemaModelContext getContext() {
         return context;
     }
 
@@ -37,7 +33,7 @@ public class JsonSample {
 
 
 
-    public Map<String, JsonNode> generateJsonCollectionBasedOnData(InputStream configStream) throws IOException {
+    public Map<String, JsonNode> generateJsonBundleBasedOnData(InputStream configStream) throws IOException {
 
         JsonNode configRootNode = context.getMapper().readTree(configStream);
         Iterator<String> dataPathIterator = configRootNode.fieldNames();
