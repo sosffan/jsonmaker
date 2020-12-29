@@ -37,7 +37,7 @@ public enum JsonFieldType {
         return this.name;
     }
 
-    public BaseJsonGenerator newJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context, Boolean isRequired) throws Exception {
+    public BaseJsonGenerator newJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context) throws Exception {
         Constructor<BaseJsonGenerator> c = ((Class<BaseJsonGenerator>) generator).getConstructor(String.class, JsonNode.class, JsonSchemaModel.class, JsonSchemaModelContext.class);
 
         return c.newInstance(schemaPath, schemaNode, currentJsonSchemaModel, context);

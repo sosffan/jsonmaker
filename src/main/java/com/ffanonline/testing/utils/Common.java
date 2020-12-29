@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class Common {
 
+    private Common() { throw new IllegalStateException("Utility class"); }
+
     public static String getFieldNameFromJsonPath(String jsonPath) {
         if (jsonPath == null || !jsonPath.contains("/") || jsonPath.endsWith("[]")) return null;
         return jsonPath.substring(jsonPath.lastIndexOf("/") + 1);
@@ -22,7 +24,7 @@ public class Common {
 
     public static JsonNode getParentNode(JsonNode rootNode, String path) {
         //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
-        if (Common.isUnderArray(path)) {
+        if (Boolean.TRUE.equals(Common.isUnderArray(path))) {
             path = path.replace("[]", "/0");
         }
 

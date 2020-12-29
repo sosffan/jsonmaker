@@ -35,7 +35,7 @@ public enum Keyword {
     }
 
     public static List<Keyword> getKeyWords(SpecVersion.VersionFlag versionFlag) {
-        List<Keyword> result = new ArrayList<Keyword>();
+        List<Keyword> result = new ArrayList<>();
         for (Keyword a : values()) {
             // If matched version
             result.add(a);

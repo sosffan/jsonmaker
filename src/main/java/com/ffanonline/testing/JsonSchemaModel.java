@@ -58,13 +58,13 @@ public class JsonSchemaModel {
         context.addFieldInfo(schemaPath, isRequired, isNullable);
 
         if (this.types.contains(JsonFieldType.OBJECT.getName())) {
-            this.generator = JsonFieldType.OBJECT.newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context, isRequired);
+            this.generator = JsonFieldType.OBJECT.newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context);
         } else if (this.types.contains(JsonFieldType.ARRAY.getName())) {
-            this.generator = JsonFieldType.ARRAY.newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context, isRequired);
+            this.generator = JsonFieldType.ARRAY.newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context);
         } else {
             for (String type : this.types) {
                 if (!type.equals("null")) {
-                    this.generator = JsonFieldType.getByValue(type).newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context, isRequired);
+                    this.generator = JsonFieldType.getByValue(type).newJsonGenerator(this.schemaPath, this.schemaNode, this, this.context);
                 }
             }
         }

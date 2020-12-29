@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-public class BasicTest {
+class BasicTest {
     private static final Logger logger = LoggerFactory.getLogger(BasicTest.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static JsonGenFactory factory;
@@ -27,7 +27,7 @@ public class BasicTest {
     }
 
     @Test
-    public void test01() throws Exception {
+    void test01() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/schema00.jsd");
 
         JsonSchemaModel schema = JsonGenFactory.getInstance(SpecVersion.VersionFlag.V4).getJsonSchemaModel(inputStream).initialize();
@@ -37,7 +37,7 @@ public class BasicTest {
     }
 
     @Test
-    public void testGenerateObjectJsonWithProperties() throws Exception {
+    void testGenerateObjectJsonWithProperties() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/objectWithPropertiesSchema.jsd");
 
         JsonSchemaModel schemaModel = factory.getJsonSchemaModel(inputStream).initialize();
@@ -49,7 +49,7 @@ public class BasicTest {
     }
 
     @Test
-    public void testBasicTypes() throws Exception {
+    void testBasicTypes() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/basicTypes.jsd");
 
         JsonSchemaModel schemaModel = factory.getJsonSchemaModel(inputStream).initialize();
@@ -61,7 +61,7 @@ public class BasicTest {
     }
 
     @Test
-    public void testArrayField() throws Exception {
+    void testArrayField() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
         JsonSchemaModel schemaModel = factory.getJsonSchemaModel(inputStream).initialize();
         JsonNode nodeResult = schemaModel.buildJson(new RandomJsonCreator());
@@ -72,7 +72,7 @@ public class BasicTest {
     }
 
     @Test
-    public void testIteratorOptionalField() throws Exception {
+    void testIteratorOptionalField() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/requiredAndOptionalFields.jsd");
 
         JsonSchemaModel schema = factory.getJsonSchemaModel(inputStream).initialize();
@@ -92,7 +92,7 @@ public class BasicTest {
     }
 
     @Test
-    public void testIteratorOptionalField_Container() throws Exception {
+    void testIteratorOptionalField_Container() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/requiredAndOptionalFields_ContainerFIeld.jsd");
 
         JsonSchemaModel schema = factory.getJsonSchemaModel(inputStream).initialize();
@@ -112,7 +112,7 @@ public class BasicTest {
     }
 
     @Test
-    public void testIteratorNullField() throws Exception {
+    void testIteratorNullField() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/nullableIterator.jsd");
 
         JsonSchemaModel schema = factory.getJsonSchemaModel(inputStream).initialize();
@@ -133,7 +133,7 @@ public class BasicTest {
 
 
     @Test
-    public void testGenerateJsonBundleThroughSampleForUnRequiredChecking() throws Exception {
+    void testGenerateJsonBundleThroughSampleForUnRequiredChecking() throws Exception {
 
         InputStream sample = this.getClass().getResourceAsStream("/json/sample01.json");
         InputStream schema = this.getClass().getResourceAsStream("/schemas/schema01.jsd");
@@ -154,7 +154,7 @@ public class BasicTest {
     }
 
     @Test
-    public void testGenerateJsonBundleThroughSampleForNullChecking() throws Exception {
+    void testGenerateJsonBundleThroughSampleForNullChecking() throws Exception {
         InputStream sample = this.getClass().getResourceAsStream("/json/sample01.json");
         InputStream schema = this.getClass().getResourceAsStream("/schemas/schema01.jsd");
 
@@ -178,9 +178,9 @@ public class BasicTest {
     }
 
     @Test
-    public void testGenerateJsonBundleWithSampleDataForField_BasedOnSampleJson() throws IOException {
+    void testGenerateJsonBundleWithSampleDataForField_BasedOnSampleJson() throws IOException {
         InputStream sampleStream = this.getClass().getResourceAsStream("/json/sample01.json");
-        InputStream dataStream = this.getClass().getResourceAsStream("/FieldsCollection.json");
+        InputStream dataStream = this.getClass().getResourceAsStream("/FieldsConfig.json");
 
         JsonTemplateModel templateModel = factory.getJsonTemplateModel(sampleStream);
         Map<String, JsonNode> result = templateModel.generateJsonBundleBasedOnData(dataStream);

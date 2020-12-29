@@ -8,4 +8,12 @@ public class BaseConstraint {
         this.isRequired = isRequired;
         this.isNullable = isNullable;
     }
+
+    public Boolean getNullable() {
+        return isNullable;
+    }
+
+    public Boolean getRequired() {
+        return isRequired;
+    }
 }

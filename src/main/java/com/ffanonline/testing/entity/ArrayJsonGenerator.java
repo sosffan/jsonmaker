@@ -30,7 +30,6 @@ public class ArrayJsonGenerator extends BaseJsonGenerator {
 
         // isRequired in below JsonSchemaModel should be false?
         this.itemSchema = new JsonSchemaModel(context, schemaPath + "[]", itemsNode, currentJsonSchemaModel, true);  // should this be the same as isRequired.
-//        this.itemSchema = new JsonSchema(context, null, itemsNode, currentJsonSchemaModel);
         this.itemSchema.initialize();
     }
 

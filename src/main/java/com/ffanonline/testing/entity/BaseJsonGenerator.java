@@ -20,7 +20,7 @@ public abstract class BaseJsonGenerator {
     private final Boolean isRequired;
     private final Boolean isNullable;
 
-    public BaseJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context) {
+    protected BaseJsonGenerator(String schemaPath, JsonNode schemaNode, JsonSchemaModel currentJsonSchemaModel, JsonSchemaModelContext context) {
         this.schemaPath = schemaPath;
         this.schemaNode = schemaNode;
         this.currentJsonSchemaModel = currentJsonSchemaModel;
@@ -111,11 +111,12 @@ public abstract class BaseJsonGenerator {
 
         switch (operationType) {
             case 1:
-                if (!getRequired()) return null;
+                if (Boolean.FALSE.equals(getRequired())) return null;
                 break;
             case 2:
-                if (getNullable()) return generateNullNode();
+                if (Boolean.TRUE.equals(getNullable())) return generateNullNode();
                 break;
+            default: throw new Exception("Not valid operation type.");
         }
         throw new Exception("no valid operationType");
     }

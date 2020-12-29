@@ -51,8 +51,8 @@ public class ObjectJsonGenerator extends BaseJsonGenerator {
             propRootNode = on;
         }
 
-        for (String propertyName : propertiesMap.keySet()) {
-            JsonSchemaModel schema = propertiesMap.get(propertyName);
+        for (Map.Entry<String, JsonSchemaModel> item : propertiesMap.entrySet()) {
+            JsonSchemaModel schema = item.getValue();
             ObjectNode node = (ObjectNode) schema.buildJson(creator);
             if (node != null) {
                 propRootNode.setAll(node);
