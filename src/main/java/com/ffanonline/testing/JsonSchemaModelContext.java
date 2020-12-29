@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JsonMoldContext {
+public class JsonSchemaModelContext {
     private final JsonNode rootNode;
     private final ObjectMapper mapper;
 
@@ -14,7 +14,7 @@ public class JsonMoldContext {
 
     private int maxItems = 20;
 
-    public JsonMoldContext(JsonNode rootNode, ObjectMapper mapper) {
+    public JsonSchemaModelContext(JsonNode rootNode, ObjectMapper mapper) {
         this.rootNode = rootNode;
         this.mapper = mapper;
     }
@@ -36,7 +36,7 @@ public class JsonMoldContext {
     }
 
     public void addFieldInfo(String jsonPath, Boolean isRequired, Boolean isNullable) {
-        FieldInformation fieldInfo = new FieldInformation(isRequired, isNullable);
+        FieldInformation fieldInfo = new FieldInformation(jsonPath, isRequired, isNullable);
         fieldsInfo.put(jsonPath, fieldInfo);
     }
 
@@ -56,8 +56,10 @@ public class JsonMoldContext {
         private final Boolean isRequired;
         private final Boolean isNullable;
         private Boolean isTraversed = false;
+        private final String jsonPath;
 
-        FieldInformation(Boolean isRequired, Boolean isNullable) {
+        FieldInformation(String jsonPath, Boolean isRequired, Boolean isNullable) {
+            this.jsonPath = jsonPath;
             this.isRequired = isRequired;
             this.isNullable = isNullable;
         }
@@ -72,6 +74,10 @@ public class JsonMoldContext {
 
         public Boolean getTraversed() {
             return isTraversed;
+        }
+
+        public String getJsonPath() {
+            return jsonPath;
         }
     }
 }

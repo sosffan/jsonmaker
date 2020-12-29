@@ -18,7 +18,7 @@ public class JsonGenFactory {
         return new Builder().build();
     }
 
-    public JsonMold getJsonMold(String jsonSchemaString) {
+    public JsonSchemaModel getJsonSchemaModel(String jsonSchemaString) {
         JsonNode node = null;
         try {
             node = this.mapper.readTree(jsonSchemaString);
@@ -26,29 +26,46 @@ public class JsonGenFactory {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return getJsonMold(node);
+        return getJsonSchemaModel(node);
     }
 
-    public JsonMold getJsonMold(InputStream inputStream) {
+    public JsonSchemaModel getJsonSchemaModel(InputStream inputStream) {
         JsonNode node = null;
         try {
             node = this.mapper.readTree(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return getJsonMold(node);
+        return getJsonSchemaModel(node);
 
     }
 
-    public JsonMold getJsonMold(JsonNode schemaNode) {
-        return newJsonMold(schemaNode);
+    public JsonSchemaModel getJsonSchemaModel(JsonNode schemaNode) {
+        return newJsonSchemaModel(schemaNode);
     }
 
-    private JsonMold newJsonMold(JsonNode schemaNode) {
+    private JsonSchemaModel newJsonSchemaModel(JsonNode schemaNode) {
 
-        JsonMoldContext context = new JsonMoldContext(schemaNode, this.mapper);
+        JsonSchemaModelContext context = new JsonSchemaModelContext(schemaNode, this.mapper);
 
-        return new JsonMold(context, schemaNode);
+        return new JsonSchemaModel(context, schemaNode);
+    }
+
+    public JsonTemplateModel getJsonTemplateModel(InputStream inputStream) {
+        JsonNode node = null;
+        try {
+            node = this.mapper.readTree(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return getJsonTemplateModel(node);
+    }
+
+    public JsonTemplateModel getJsonTemplateModel(JsonNode node) {
+        JsonSchemaModelContext context = new JsonSchemaModelContext(node, this.mapper);
+
+        return new JsonTemplateModel(context, node);
     }
 
     private static class Builder {
@@ -61,5 +78,6 @@ public class JsonGenFactory {
             return new JsonGenFactory(objectMapper);
         }
     }
+
 
 }
