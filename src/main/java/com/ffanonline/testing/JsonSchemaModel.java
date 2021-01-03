@@ -50,7 +50,7 @@ public class JsonSchemaModel {
         fetchTypeProperties(this.schemaNode);
         fetchRequiredFields(this.schemaNode);
 
-        Boolean isNullable = false;
+        boolean isNullable = false;
         if (this.types.contains("null")) {
             isNullable = true;
         }

@@ -8,6 +8,7 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,14 @@ class BasicTest {
         factory = JsonGenFactory.getInstance(SpecVersion.VersionFlag.V4);
     }
 
-    @Test
+    @Test @Disabled
     void test01() throws Exception {
         InputStream inputStream = this.getClass().getResourceAsStream("/schemas/schema00.jsd");
 
         JsonSchemaModel schema = JsonGenFactory.getInstance(SpecVersion.VersionFlag.V4).getJsonSchemaModel(inputStream).initialize();
         String nodeString = schema.generateJsonString(new RandomJsonCreator());
+
+        String path = System.getProperty("user.dir");
 
         logger.info(nodeString);
     }

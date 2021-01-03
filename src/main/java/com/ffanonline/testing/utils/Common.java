@@ -2,8 +2,15 @@ package com.ffanonline.testing.utils;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.Properties;
 
 public class Common {
+
+    static Logger logger = LoggerFactory.getLogger(Common.class);
 
     private Common() { throw new IllegalStateException("Utility class"); }
 
@@ -33,4 +40,39 @@ public class Common {
         if (null == pointer.head()) { return null;} // Skip root element.
         return rootNode.at(pointer.head());
     }
+
+    public static InputStream getFileStreamFromProjectPath(String fileName) {
+        InputStream inputStream = null;
+        String projectPath = System.getProperty("user.dir");
+        String filePath = projectPath + File.separator + fileName;
+        File file = new File(filePath);
+        if (file.exists()) {
+            logger.info("File path --> " + filePath);
+
+            try {
+                inputStream = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            logger.info("File not exist --> " + filePath);
+        }
+
+        return inputStream;
+    }
+
+    public static Properties getPropertiesFromProjectPath(String fileName) {
+        InputStream inputStream = getFileStreamFromProjectPath(fileName);
+        if (inputStream == null) {return null;}
+
+        Properties properties = new Properties();
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return properties;
+    }
+
 }
