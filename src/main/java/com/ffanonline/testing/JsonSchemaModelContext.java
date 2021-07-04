@@ -99,11 +99,13 @@ public class JsonSchemaModelContext {
     }
 
     public void addFieldInfo(String jsonPath, Boolean isRequired, Boolean isNullable) {
+        if (jsonPath.endsWith("[]")){return;} // Array field has already been added without "[]", no need to add twice
         FieldInformation fieldInfo = new FieldInformation(jsonPath, isRequired, isNullable);
         fieldsInfo.put(jsonPath, fieldInfo);
     }
 
     public FieldInformation getFieldInfo(String jsonPath) {
+        if (jsonPath.endsWith("[]")) {jsonPath = jsonPath.replace("[]", "");} // Array field has already been added without "[]"
         return fieldsInfo.get(jsonPath);
     }
 

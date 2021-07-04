@@ -16,9 +16,9 @@ public enum JsonFieldType {
     UNDEFINED("undefined", StringJsonGenerator.class);
 
     private final String name;
-    private final Class generator;
+    private final Class<? extends BaseJsonGenerator> generator;
 
-    JsonFieldType(String type, Class generator) {
+    JsonFieldType(String type, Class<? extends BaseJsonGenerator> generator) {
         this.name = type;
         this.generator = generator;
     }
