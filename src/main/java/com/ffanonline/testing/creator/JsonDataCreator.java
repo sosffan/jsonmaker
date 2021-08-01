@@ -6,11 +6,11 @@ import com.ffanonline.testing.constraints.StringBaseConstraint;
 
 public interface JsonDataCreator {
 
-    String generateStringField(StringBaseConstraint constraint, String fieldName, String fieldPath);
+    String generateStringField(StringBaseConstraint constraint, String fieldName, String fieldPath, String originalValue);
 
-    Boolean generateBooleanField(BaseConstraint constraint, String fieldName, String fieldPath);
+    Boolean generateBooleanField(BaseConstraint constraint, String fieldName, String fieldPath, Boolean originalValue);
 
-    Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath);
+    Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Long originalValue);
 
-    Long generateIntegerField(NumberBaseConstraint constraint, String fieldName, String fieldPath);
+    Long generateIntegerField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Integer originalValue);
 }

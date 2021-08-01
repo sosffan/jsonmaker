@@ -20,13 +20,15 @@ public class Common {
     }
 
     public static Boolean isUnderArray(String jsonPath) {
-        String[] subPathArray = jsonPath.split("/");
-        for (int i = 0 ; i < subPathArray.length-1;i++) {
-            if (subPathArray[i].endsWith("[]")) {
-                return true;
-            }
-        }
-        return false;
+//        String[] subPathArray = jsonPath.split("/");
+//        for (int i = 0 ; i < subPathArray.length-1;i++) {
+//            if (subPathArray[i].endsWith("[]")) {
+//                return true;
+//            }
+//        }
+//        return false;
+
+        return jsonPath.contains("[]");
     }
 
     public static JsonNode getParentNode(JsonNode rootNode, String path) {

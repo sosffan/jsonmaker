@@ -12,7 +12,7 @@ import java.util.Set;
 public class RandomJsonCreator implements JsonDataCreator {
 
     @Override
-    public String generateStringField(StringBaseConstraint constraint, String fieldName, String fieldPath) {
+    public String generateStringField(StringBaseConstraint constraint, String fieldName, String fieldPath, String originalValue) {
         String pattern = constraint.getPattern();
         int maxLength = constraint.getMaxLength();
         int minLength = constraint.getMinLength();
@@ -45,12 +45,12 @@ public class RandomJsonCreator implements JsonDataCreator {
     }
 
     @Override
-    public Boolean generateBooleanField(BaseConstraint constraint, String fieldName, String fieldPath) {
+    public Boolean generateBooleanField(BaseConstraint constraint, String fieldName, String fieldPath, Boolean originalValue) {
         return RandomUtils.nextBoolean();
     }
 
     @Override
-    public Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath) {
+    public Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Long originalValue) {
         int maximum = constraint.getMaximum();
         int minimum = constraint.getMinimum();
 
@@ -62,7 +62,7 @@ public class RandomJsonCreator implements JsonDataCreator {
     }
 
     @Override
-    public Long generateIntegerField(NumberBaseConstraint constraint, String fieldName, String fieldPath) {
+    public Long generateIntegerField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Integer originalValue) {
         int maximum = constraint.getMaximum();
         int minimum = constraint.getMinimum();
         if (maximum < 0) {

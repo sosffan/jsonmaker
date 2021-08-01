@@ -2,6 +2,7 @@ package com.ffanonline.testing;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ffanonline.testing.creator.RandomJsonCreator;
 import com.ffanonline.testing.utils.Common;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,7 +42,7 @@ public class GenerateJsonCollectionWithSampleTest {
             Assertions.assertTrue(node.at(path).isMissingNode());
         }
 
-        Assertions.assertEquals(8, result.size());
+        Assertions.assertEquals(9, result.size()); // currently  /awards[] is not in result.
     }
 
     @Test
@@ -85,5 +86,17 @@ public class GenerateJsonCollectionWithSampleTest {
         }
         Assertions.assertEquals(12, result.size());
 
+    }
+
+
+    @Test
+    void test001() throws Exception {
+        InputStream sampleStream = this.getClass().getResourceAsStream("/json/sample01.json");
+        InputStream modelStream = this.getClass().getResourceAsStream("/schemas/schema01.jsd");
+        JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
+
+        Map<String, JsonNode> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+
+        Assertions.assertEquals(11, result.size());
     }
 }

@@ -98,14 +98,14 @@ public class JsonSchemaModelContext {
         this.maxItems = maxItems;
     }
 
-    public void addFieldInfo(String jsonPath, Boolean isRequired, Boolean isNullable) {
-        if (jsonPath.endsWith("[]")){return;} // Array field has already been added without "[]", no need to add twice
-        FieldInformation fieldInfo = new FieldInformation(jsonPath, isRequired, isNullable);
+    public void addFieldInfo(String jsonPath, Boolean isRequired, Boolean isNullable, JsonSchemaModel schemaModel) {
+//        if (jsonPath.endsWith("[]")){return;} // Array field has already been added without "[]", no need to add twice
+        FieldInformation fieldInfo = new FieldInformation(jsonPath, isRequired, isNullable, schemaModel);
         fieldsInfo.put(jsonPath, fieldInfo);
     }
 
     public FieldInformation getFieldInfo(String jsonPath) {
-        if (jsonPath.endsWith("[]")) {jsonPath = jsonPath.replace("[]", "");} // Array field has already been added without "[]"
+//        if (jsonPath.endsWith("[]")) {jsonPath = jsonPath.replace("[]", "");} // Array field has already been added without "[]"
         return fieldsInfo.get(jsonPath);
     }
 
@@ -122,11 +122,13 @@ public class JsonSchemaModelContext {
         private final Boolean isNullable;
         private final String jsonPath;
         private Boolean isTraversed = false;
+        private JsonSchemaModel schemaModel;
 
-        FieldInformation(String jsonPath, Boolean isRequired, Boolean isNullable) {
+        FieldInformation(String jsonPath, Boolean isRequired, Boolean isNullable, JsonSchemaModel schemaModel) {
             this.jsonPath = jsonPath;
             this.isRequired = isRequired;
             this.isNullable = isNullable;
+            this.schemaModel = schemaModel;
         }
 
         public Boolean getRequired() {
@@ -144,5 +146,7 @@ public class JsonSchemaModelContext {
         public String getJsonPath() {
             return jsonPath;
         }
+
+        public JsonSchemaModel getSchemaModel() {return schemaModel;}
     }
 }
