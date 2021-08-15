@@ -8,6 +8,7 @@
     "schoolName": "ABC University",
     "address": "A street, B city, C province, D country"
   },
+  "awards" : [1,3],
   "projects": [
     {
       "name": "projectOne",
