@@ -39,9 +39,9 @@ public class StringJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) {
+    public JsonNode create(JsonDataCreator creator, JsonNode originalValue) {
 
-        String value = creator.generateStringField(constraint, getFieldName(), getSchemaPath(), null );
+        String value = creator.generateStringField(constraint, getFieldName(), getSchemaPath(), originalValue==null?null:originalValue.asText() );
 
         if (getFieldName() == null) {
             return TextNode.valueOf(value);

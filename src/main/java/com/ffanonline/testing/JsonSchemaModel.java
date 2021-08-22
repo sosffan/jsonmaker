@@ -77,7 +77,7 @@ public class JsonSchemaModel {
 
 
     public JsonNode buildJson(JsonDataCreator creator) throws Exception {
-        return this.generator.create(creator);
+        return this.generator.create(creator, null);
     }
 
     public String generateJsonString(JsonDataCreator creator) throws Exception {
@@ -137,7 +137,7 @@ public class JsonSchemaModel {
         Map<String, JsonNode> results = new HashMap<>();
         for (Map.Entry<String, JsonSchemaModelContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
-            JsonNode resultNode = this.generator.create(creator);
+            JsonNode resultNode = this.generator.create(creator, null);
             if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {
                 continue;
             }
@@ -281,8 +281,11 @@ public class JsonSchemaModel {
             if (types.contains(JsonFieldType.ARRAY.getName()) || types.contains(JsonFieldType.OBJECT.getName())) {
                 continue;
             }
+
+            JsonNode originalNode = getJsonNodeByPath(sampleJsonNode, item.getValue().getJsonPath());
+
             JsonNode resultNode = sampleJsonNode.deepCopy();
-            JsonNode newValue = item.getValue().getSchemaModel().generator.create(creator);
+            JsonNode newValue = item.getValue().getSchemaModel().generator.create(creator, originalNode);
 
 
             //if not object or array, then this.generator.create(creator).  But if array item is not object, then add value to array.
@@ -297,14 +300,26 @@ public class JsonSchemaModel {
         return results;
     }
 
-    private OutcomeData updateJsonThroughJsonPath(JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo, JsonNode newValue) {
-        String jsonPath = fieldInfo.getJsonPath();
+    private JsonNode getJsonNodeByPath(JsonNode sampleJsonNode, String jsonPath) {
+        JsonPointer pointer =  standardizeJsonPath(jsonPath);
+
+        return sampleJsonNode.at(pointer);
+    }
+
+    private JsonPointer standardizeJsonPath(String jsonPath) {
         //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
         if (Boolean.TRUE.equals(Common.isUnderArray(jsonPath))) {
             jsonPath = jsonPath.replace("[]", "/0");
         }
 
-        JsonPointer pointer = JsonPointer.compile(jsonPath);
+        return JsonPointer.compile(jsonPath);
+    }
+
+
+    private OutcomeData updateJsonThroughJsonPath(JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo, JsonNode newValue) {
+        String jsonPath = fieldInfo.getJsonPath();
+
+        JsonPointer pointer = standardizeJsonPath(jsonPath);
 
         String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
 

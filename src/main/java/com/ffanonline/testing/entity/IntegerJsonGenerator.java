@@ -26,9 +26,9 @@ public class IntegerJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator, JsonNode originalValue) throws Exception {
 
-        Long value = creator.generateIntegerField(constraint, getFieldName(), getSchemaPath(),null );
+        Long value = creator.generateIntegerField(constraint, getFieldName(), getSchemaPath(), originalValue==null?null:originalValue.asInt() );
 
         if (getFieldName() == null) {
             return LongNode.valueOf(value);

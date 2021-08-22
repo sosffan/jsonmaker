@@ -40,7 +40,7 @@ public class ObjectJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator, JsonNode originalValue) throws Exception {
 
         ObjectNode on = getContext().getMapper().createObjectNode();
         ObjectNode propRootNode;

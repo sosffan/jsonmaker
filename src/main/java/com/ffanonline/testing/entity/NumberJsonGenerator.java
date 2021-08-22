@@ -26,9 +26,9 @@ public class NumberJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator, JsonNode originalValue) throws Exception {
 
-        Double value = creator.generateNumberField(constraint, getFieldName(), getSchemaPath(), null );
+        Double value = creator.generateNumberField(constraint, getFieldName(), getSchemaPath(), originalValue==null?null:originalValue.asDouble() );
 
         if (getFieldName() == null) {
             return DoubleNode.valueOf(value);

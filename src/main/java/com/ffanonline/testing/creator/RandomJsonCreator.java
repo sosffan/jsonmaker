@@ -50,7 +50,7 @@ public class RandomJsonCreator implements JsonDataCreator {
     }
 
     @Override
-    public Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Long originalValue) {
+    public Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Double originalValue) {
         int maximum = constraint.getMaximum();
         int minimum = constraint.getMinimum();
 
