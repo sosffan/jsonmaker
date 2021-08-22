@@ -1,5 +1,6 @@
 package com.ffanonline.testing;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffanonline.testing.creator.RandomJsonCreator;
@@ -109,5 +110,51 @@ public class GenerateJsonCollectionWithSampleTest {
         Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
 
         Assertions.assertEquals(11, result.size());
+        printResultOutcomeDataMap(result);
+    }
+
+    @Test
+    public void testValueArray() throws Exception {
+        InputStream sampleStream = this.getClass().getResourceAsStream("/json/arrayType.json");
+        InputStream modelStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
+        JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
+
+        Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+        Assertions.assertEquals(6, result.size());
+        printResultOutcomeDataMap(result); 
+    }
+
+    @Test
+    public void testValueArrayWithEmptyArray() throws Exception {
+        InputStream sampleStream = this.getClass().getResourceAsStream("/json/arrayType_withEmptyArray.json");
+        InputStream modelStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
+        JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
+
+        Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+        Assertions.assertEquals(6, result.size());
+        printResultOutcomeDataMap(result);
+    }
+
+
+
+
+
+    //////////////////////////////
+    public static void printResultMap(Map<String, JsonNode> result) {
+        for (Map.Entry<String, JsonNode> item : result.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue();
+
+            logger.info("\n For field:" + path);
+            logger.info(node.toPrettyString());
+        }
+    }
+    public static void printResultOutcomeDataMap(Map<String, OutcomeData> result) {
+        for (Map.Entry<String, OutcomeData> item : result.entrySet()) {
+            String path = item.getKey();
+            JsonNode node = item.getValue().getJsonData();
+            logger.info("\n For field:" + path);
+            logger.info(node.toPrettyString());
+        }
     }
 }

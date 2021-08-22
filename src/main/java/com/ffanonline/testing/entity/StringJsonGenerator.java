@@ -23,7 +23,7 @@ public class StringJsonGenerator extends BaseJsonGenerator {
         JsonNode enumNode = schemaNode.get(Keyword.ENUM.getName());
 
         String pattern = patternNode == null ? null : patternNode.textValue();
-        int maxLength = maxLengthNode == null ? -1 : maxLengthNode.intValue();
+        int maxLength = maxLengthNode == null ? 0 : maxLengthNode.intValue();
         int minLength = minLengthNode == null ? 0 : minLengthNode.intValue();
 
         Set<String> enumSet = new HashSet<>();
@@ -39,9 +39,9 @@ public class StringJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) {
+    public JsonNode create(JsonDataCreator creator, JsonNode originalValue) {
 
-        String value = creator.generateStringField(constraint, getFieldName(), getSchemaPath(), null );
+        String value = creator.generateStringField(constraint, getFieldName(), getSchemaPath(), originalValue==null?null:originalValue.asText() );
 
         if (getFieldName() == null) {
             return TextNode.valueOf(value);

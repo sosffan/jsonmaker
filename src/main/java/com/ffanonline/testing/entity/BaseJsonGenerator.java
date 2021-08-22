@@ -37,10 +37,11 @@ public abstract class BaseJsonGenerator {
     /***
      *
      * @param creator
+     * @param originalValue
      * @return
      * @throws Exception
      */
-    public abstract JsonNode create(JsonDataCreator creator) throws Exception;
+    public abstract JsonNode create(JsonDataCreator creator, JsonNode originalValue) throws Exception;
 
     public String getSchemaPath() {
         return schemaPath;

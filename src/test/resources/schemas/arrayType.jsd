@@ -8,8 +8,7 @@
       "items": {
         "type": "string"
       },
-      "maxItems": 3,
-      "minItems": 1
+      "maxItems": 3
     },
     "arrayNumber": {
       "type": "array",

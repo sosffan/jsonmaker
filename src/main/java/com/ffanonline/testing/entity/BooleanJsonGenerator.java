@@ -17,9 +17,9 @@ public class BooleanJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) {
+    public JsonNode create(JsonDataCreator creator, JsonNode originalValue) {
 
-        Boolean value = creator.generateBooleanField(constraint, getFieldName(), getSchemaPath(), null );
+        Boolean value = creator.generateBooleanField(constraint, getFieldName(), getSchemaPath(), originalValue==null?null:originalValue.asBoolean() );
 
 
         if (getFieldName() == null) {

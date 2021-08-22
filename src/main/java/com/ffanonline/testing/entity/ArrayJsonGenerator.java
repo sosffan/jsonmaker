@@ -34,7 +34,7 @@ public class ArrayJsonGenerator extends BaseJsonGenerator {
     }
 
     @Override
-    public JsonNode create(JsonDataCreator creator) throws Exception {
+    public JsonNode create(JsonDataCreator creator, JsonNode originalValue) throws Exception {
 
         ObjectNode node = getContext().getMapper().createObjectNode();
         ArrayNode arrayNode;

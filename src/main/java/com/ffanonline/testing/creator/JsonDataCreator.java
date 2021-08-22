@@ -10,7 +10,7 @@ public interface JsonDataCreator {
 
     Boolean generateBooleanField(BaseConstraint constraint, String fieldName, String fieldPath, Boolean originalValue);
 
-    Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Long originalValue);
+    Double generateNumberField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Double originalValue);
 
     Long generateIntegerField(NumberBaseConstraint constraint, String fieldName, String fieldPath, Integer originalValue);
 }

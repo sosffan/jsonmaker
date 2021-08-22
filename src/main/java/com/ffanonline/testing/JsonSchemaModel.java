@@ -12,7 +12,10 @@ import com.ffanonline.testing.utils.Common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class JsonSchemaModel {
 
@@ -51,10 +54,7 @@ public class JsonSchemaModel {
         fetchTypeProperties(this.schemaNode);
         fetchRequiredFields(this.schemaNode);
 
-        boolean isNullable = false;
-        if (this.types.contains("null")) {
-            isNullable = true;
-        }
+        boolean isNullable = this.types.contains("null");
         context.addFieldInfo(schemaPath, isRequired, isNullable, this);
 
         if (this.types.contains(JsonFieldType.OBJECT.getName())) {
@@ -76,9 +76,8 @@ public class JsonSchemaModel {
     }
 
 
-
     public JsonNode buildJson(JsonDataCreator creator) throws Exception {
-        return this.generator.create(creator);
+        return this.generator.create(creator, null);
     }
 
     public String generateJsonString(JsonDataCreator creator) throws Exception {
@@ -138,8 +137,10 @@ public class JsonSchemaModel {
         Map<String, JsonNode> results = new HashMap<>();
         for (Map.Entry<String, JsonSchemaModelContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
-            JsonNode resultNode = this.generator.create(creator);
-            if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {continue;}
+            JsonNode resultNode = this.generator.create(creator, null);
+            if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {
+                continue;
+            }
 
             results.put(item.getKey(), resultNode);
         }
@@ -152,7 +153,9 @@ public class JsonSchemaModel {
         for (Map.Entry<String, JsonSchemaModelContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
             JsonNode resultNode = sampleJsonNode.deepCopy();
-            if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {continue;}
+            if (null == updateJsonBasedOnOperationType(operationType, resultNode, item.getValue())) {
+                continue;
+            }
 
             results.put(item.getKey(), resultNode);
         }
@@ -170,7 +173,9 @@ public class JsonSchemaModel {
 
         String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
 
-        if (null == pointer.head()) { return null;} // Skip root element.
+        if (null == pointer.head()) {
+            return null;
+        } // Skip root element.
         JsonNode parentNode = resultNode.at(pointer.head());
         ObjectNode oNode;
         if (parentNode instanceof ObjectNode) {
@@ -273,15 +278,21 @@ public class JsonSchemaModel {
         for (Map.Entry<String, JsonSchemaModelContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
             Set<String> types = item.getValue().getSchemaModel().types;
-            if (types.contains(JsonFieldType.ARRAY.getName()) || types.contains(JsonFieldType.OBJECT.getName())){continue;}
-            JsonNode resultNode = sampleJsonNode.deepCopy();
-            JsonNode newValue = item.getValue().getSchemaModel().generator.create(creator);
+            if (types.contains(JsonFieldType.ARRAY.getName()) || types.contains(JsonFieldType.OBJECT.getName())) {
+                continue;
+            }
 
+            JsonNode originalNode = getJsonNodeByPath(sampleJsonNode, item.getValue().getJsonPath());
+
+            JsonNode resultNode = sampleJsonNode.deepCopy();
+            JsonNode newValue = item.getValue().getSchemaModel().generator.create(creator, originalNode);
 
 
             //if not object or array, then this.generator.create(creator).  But if array item is not object, then add value to array.
-            OutcomeData data= updateJsonThroughJsonPath(resultNode, item.getValue(), newValue);
-            if (null == data) {continue;}
+            OutcomeData data = updateJsonThroughJsonPath(resultNode, item.getValue(), newValue);
+            if (null == data) {
+                continue;
+            }
 
             results.put(item.getKey(), data);
         }
@@ -289,18 +300,32 @@ public class JsonSchemaModel {
         return results;
     }
 
-    private OutcomeData updateJsonThroughJsonPath(JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo, JsonNode newValue) {
-        String jsonPath = fieldInfo.getJsonPath();
+    private JsonNode getJsonNodeByPath(JsonNode sampleJsonNode, String jsonPath) {
+        JsonPointer pointer =  standardizeJsonPath(jsonPath);
+
+        return sampleJsonNode.at(pointer);
+    }
+
+    private JsonPointer standardizeJsonPath(String jsonPath) {
         //If it is any properties that under array, only the first one would be updated. so will just select the first array item.
         if (Boolean.TRUE.equals(Common.isUnderArray(jsonPath))) {
             jsonPath = jsonPath.replace("[]", "/0");
         }
 
-        JsonPointer pointer = JsonPointer.compile(jsonPath);
+        return JsonPointer.compile(jsonPath);
+    }
+
+
+    private OutcomeData updateJsonThroughJsonPath(JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo, JsonNode newValue) {
+        String jsonPath = fieldInfo.getJsonPath();
+
+        JsonPointer pointer = standardizeJsonPath(jsonPath);
 
         String fieldName = Common.getFieldNameFromJsonPath(jsonPath);
 
-        if (null == pointer.head()) { return null;} // Skip root element.
+        if (null == pointer.head()) {
+            return null;
+        } // Skip root element.
         JsonNode parentNode = resultNode.at(pointer.head());
         JsonNode originalNode = resultNode.at(pointer);
 
@@ -309,12 +334,16 @@ public class JsonSchemaModel {
             oNode.setAll((ObjectNode) newValue);
         } else if (parentNode instanceof ArrayNode) {
             ArrayNode aNode = (ArrayNode) parentNode;
-            aNode.set(0, newValue);
+            if (aNode.isEmpty()) {
+                aNode.add(newValue);
+            } else {
+                aNode.set(0, newValue);
+            }
         } else return null;
 
         OutcomeData data = new OutcomeData();
         data.setOriginalValue(originalNode);
-        data.setNewValue(newValue.findValue(fieldName));
+        data.setNewValue(newValue.findValue(fieldName) == null? newValue: newValue.findValue(fieldName));
         data.setJsonData(resultNode);
         data.setPath(jsonPath);
 
