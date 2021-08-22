@@ -1,0 +1,26 @@
+{
+  "arrayString": [
+  ],
+  "arrayNumber": [
+    1.1,
+    2.1
+  ],
+  "arrayInteger": [
+    1,
+    2
+  ],
+  "arrayBoolean": [
+    true,
+    false
+  ],
+  "arrayObject": [
+    {
+      "prop1": "item1 String",
+      "prop2": 10
+    },
+    {
+      "prop1": "item2 String",
+      "prop2": 20
+    }
+  ]
+}

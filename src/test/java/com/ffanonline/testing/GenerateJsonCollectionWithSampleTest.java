@@ -110,4 +110,24 @@ public class GenerateJsonCollectionWithSampleTest {
 
         Assertions.assertEquals(11, result.size());
     }
+
+    @Test
+    public void testValueArray() throws Exception {
+        InputStream sampleStream = this.getClass().getResourceAsStream("/json/arrayType.json");
+        InputStream modelStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
+        JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
+
+        Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+        Assertions.assertEquals(6, result.size());
+    }
+
+    @Test
+    public void testValueArrayWithEmptyArray() throws Exception {
+        InputStream sampleStream = this.getClass().getResourceAsStream("/json/arrayType_withEmptyArray.json");
+        InputStream modelStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
+        JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
+
+        Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+        Assertions.assertEquals(6, result.size());
+    }
 }

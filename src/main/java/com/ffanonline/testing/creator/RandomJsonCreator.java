@@ -26,11 +26,11 @@ public class RandomJsonCreator implements JsonDataCreator {
 
         String result;
 
-        if (maxLength < 0) {
+        if (maxLength <= 0) {
             maxLength = 100;
         }
 
-        int count = RandomUtils.nextInt(minLength, maxLength);
+        int count = RandomUtils.nextInt(minLength, maxLength+1);
 
         if (pattern != null) {
             RgxGen rgxGen = new RgxGen(pattern);
@@ -69,7 +69,7 @@ public class RandomJsonCreator implements JsonDataCreator {
             maximum = 99999999;
         }
 
-        return RandomUtils.nextLong(minimum, maximum);
+        return RandomUtils.nextLong(minimum, maximum + 1);
     }
 
 }
