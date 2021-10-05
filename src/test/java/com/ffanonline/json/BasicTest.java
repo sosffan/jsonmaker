@@ -1,9 +1,9 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ffanonline.testing.creator.RandomJsonCreator;
-import com.ffanonline.testing.utils.Common;
+import com.ffanonline.json.creator.RandomJsonCreator;
+import com.ffanonline.json.utils.Common;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 

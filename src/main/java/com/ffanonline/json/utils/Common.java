@@ -1,4 +1,4 @@
-package com.ffanonline.testing.utils;
+package com.ffanonline.json.utils;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;

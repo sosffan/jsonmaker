@@ -1,4 +1,4 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

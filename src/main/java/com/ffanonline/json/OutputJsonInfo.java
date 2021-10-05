@@ -1,8 +1,8 @@
-package com.ffanonline.testing.entity;
+package com.ffanonline.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class OutcomeData {
+public class OutputJsonInfo {
     private String path;
     private JsonNode jsonData;
     private JsonNode originalValue;

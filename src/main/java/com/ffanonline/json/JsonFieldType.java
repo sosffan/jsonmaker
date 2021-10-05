@@ -1,7 +1,7 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ffanonline.testing.entity.*;
+import com.ffanonline.json.generator.*;
 
 import java.lang.reflect.Constructor;
 

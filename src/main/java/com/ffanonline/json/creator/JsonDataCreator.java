@@ -1,8 +1,8 @@
-package com.ffanonline.testing.creator;
+package com.ffanonline.json.creator;
 
-import com.ffanonline.testing.constraints.BaseConstraint;
-import com.ffanonline.testing.constraints.NumberBaseConstraint;
-import com.ffanonline.testing.constraints.StringBaseConstraint;
+import com.ffanonline.json.constraint.BaseConstraint;
+import com.ffanonline.json.constraint.NumberBaseConstraint;
+import com.ffanonline.json.constraint.StringBaseConstraint;
 
 public interface JsonDataCreator {
 

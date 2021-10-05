@@ -1,11 +1,9 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ffanonline.testing.creator.RandomJsonCreator;
-import com.ffanonline.testing.entity.OutcomeData;
-import com.ffanonline.testing.utils.Common;
+import com.ffanonline.json.creator.RandomJsonCreator;
+import com.ffanonline.json.utils.Common;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -107,7 +105,7 @@ public class GenerateJsonCollectionWithSampleTest {
         InputStream modelStream = this.getClass().getResourceAsStream("/schemas/schema01.jsd");
         JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
 
-        Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+        Map<String, OutputJsonInfo> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
 
         Assertions.assertEquals(11, result.size());
         printResultOutcomeDataMap(result);
@@ -119,7 +117,7 @@ public class GenerateJsonCollectionWithSampleTest {
         InputStream modelStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
         JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
 
-        Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+        Map<String, OutputJsonInfo> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
         Assertions.assertEquals(6, result.size());
         printResultOutcomeDataMap(result); 
     }
@@ -130,7 +128,7 @@ public class GenerateJsonCollectionWithSampleTest {
         InputStream modelStream = this.getClass().getResourceAsStream("/schemas/arrayType.jsd");
         JsonSchemaModel model = factory.getJsonSchemaModel(modelStream).initialize();
 
-        Map<String, OutcomeData> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
+        Map<String, OutputJsonInfo> result = model.generateJsonCollectionForEachFields(sampleStream, new RandomJsonCreator());
         Assertions.assertEquals(6, result.size());
         printResultOutcomeDataMap(result);
     }
@@ -149,8 +147,8 @@ public class GenerateJsonCollectionWithSampleTest {
             logger.info(node.toPrettyString());
         }
     }
-    public static void printResultOutcomeDataMap(Map<String, OutcomeData> result) {
-        for (Map.Entry<String, OutcomeData> item : result.entrySet()) {
+    public static void printResultOutcomeDataMap(Map<String, OutputJsonInfo> result) {
+        for (Map.Entry<String, OutputJsonInfo> item : result.entrySet()) {
             String path = item.getKey();
             JsonNode node = item.getValue().getJsonData();
             logger.info("\n For field:" + path);

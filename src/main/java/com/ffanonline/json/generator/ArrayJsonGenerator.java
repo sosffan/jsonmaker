@@ -1,13 +1,13 @@
-package com.ffanonline.testing.entity;
+package com.ffanonline.json.generator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ffanonline.testing.JsonSchemaModel;
-import com.ffanonline.testing.JsonSchemaModelContext;
-import com.ffanonline.testing.Keyword;
-import com.ffanonline.testing.constraints.ArrayBaseConstraint;
-import com.ffanonline.testing.creator.JsonDataCreator;
+import com.ffanonline.json.JsonSchemaModel;
+import com.ffanonline.json.JsonSchemaModelContext;
+import com.ffanonline.json.Keyword;
+import com.ffanonline.json.constraint.ArrayBaseConstraint;
+import com.ffanonline.json.creator.JsonDataCreator;
 import org.apache.commons.lang3.RandomUtils;
 
 public class ArrayJsonGenerator extends BaseJsonGenerator {

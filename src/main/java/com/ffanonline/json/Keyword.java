@@ -1,4 +1,4 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
 import java.util.ArrayList;
 import java.util.List;
