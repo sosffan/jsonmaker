@@ -1,8 +1,8 @@
-package com.ffanonline.testing.creator;
+package com.ffanonline.json.creator;
 
-import com.ffanonline.testing.constraints.BaseConstraint;
-import com.ffanonline.testing.constraints.NumberBaseConstraint;
-import com.ffanonline.testing.constraints.StringBaseConstraint;
+import com.ffanonline.json.constraint.BaseConstraint;
+import com.ffanonline.json.constraint.NumberBaseConstraint;
+import com.ffanonline.json.constraint.StringBaseConstraint;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -16,11 +16,14 @@ public class RandomJsonCreator implements JsonDataCreator {
         String pattern = constraint.getPattern();
         int maxLength = constraint.getMaxLength();
         int minLength = constraint.getMinLength();
+        if (minLength == 0) {
+            minLength++;
+        }
 
         Set<String> enumValues = constraint.getEnumSet();
 
         if (enumValues != null) {
-            int index = RandomUtils.nextInt(0, enumValues.size() - 1);
+            int index = RandomUtils.nextInt(0, enumValues.size());
             return enumValues.toArray()[index].toString();
         }
 

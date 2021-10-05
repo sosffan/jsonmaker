@@ -1,4 +1,4 @@
-package com.ffanonline.testing.constraints;
+package com.ffanonline.json.constraint;
 
 import java.util.Set;
 

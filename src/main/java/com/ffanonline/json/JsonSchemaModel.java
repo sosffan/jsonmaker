@@ -1,14 +1,13 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ffanonline.testing.creator.JsonDataCreator;
-import com.ffanonline.testing.entity.BaseJsonGenerator;
-import com.ffanonline.testing.entity.OutcomeData;
-import com.ffanonline.testing.utils.Common;
+import com.ffanonline.json.creator.JsonDataCreator;
+import com.ffanonline.json.generator.BaseJsonGenerator;
+import com.ffanonline.json.utils.Common;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -272,9 +271,9 @@ public class JsonSchemaModel {
         return context.getFieldsInfo();
     }
 
-    public Map<String, OutcomeData> generateJsonCollectionForEachFields(InputStream sample, JsonDataCreator creator) throws Exception {
+    public Map<String, OutputJsonInfo> generateJsonCollectionForEachFields(InputStream sample, JsonDataCreator creator) throws Exception {
         JsonNode sampleJsonNode = context.getMapper().readTree(sample);
-        Map<String, OutcomeData> results = new HashMap<>();
+        Map<String, OutputJsonInfo> results = new HashMap<>();
         for (Map.Entry<String, JsonSchemaModelContext.FieldInformation> item : context.getFieldsInfo().entrySet()) {
 
             Set<String> types = item.getValue().getSchemaModel().types;
@@ -289,7 +288,7 @@ public class JsonSchemaModel {
 
 
             //if not object or array, then this.generator.create(creator).  But if array item is not object, then add value to array.
-            OutcomeData data = updateJsonThroughJsonPath(resultNode, item.getValue(), newValue);
+            OutputJsonInfo data = updateJsonThroughJsonPath(resultNode, item.getValue(), newValue);
             if (null == data) {
                 continue;
             }
@@ -316,7 +315,7 @@ public class JsonSchemaModel {
     }
 
 
-    private OutcomeData updateJsonThroughJsonPath(JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo, JsonNode newValue) {
+    private OutputJsonInfo updateJsonThroughJsonPath(JsonNode resultNode, JsonSchemaModelContext.FieldInformation fieldInfo, JsonNode newValue) {
         String jsonPath = fieldInfo.getJsonPath();
 
         JsonPointer pointer = standardizeJsonPath(jsonPath);
@@ -341,7 +340,7 @@ public class JsonSchemaModel {
             }
         } else return null;
 
-        OutcomeData data = new OutcomeData();
+        OutputJsonInfo data = new OutputJsonInfo();
         data.setOriginalValue(originalNode);
         data.setNewValue(newValue.findValue(fieldName) == null? newValue: newValue.findValue(fieldName));
         data.setJsonData(resultNode);

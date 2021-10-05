@@ -1,8 +1,8 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ffanonline.testing.utils.Common;
+import com.ffanonline.json.utils.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

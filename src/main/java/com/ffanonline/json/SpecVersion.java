@@ -1,4 +1,4 @@
-package com.ffanonline.testing;
+package com.ffanonline.json;
 
 public class SpecVersion {
 

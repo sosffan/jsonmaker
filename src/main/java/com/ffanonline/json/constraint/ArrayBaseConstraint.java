@@ -1,4 +1,4 @@
-package com.ffanonline.testing.constraints;
+package com.ffanonline.json.constraint;
 
 public class ArrayBaseConstraint extends BaseConstraint {
     private final int minItems;
